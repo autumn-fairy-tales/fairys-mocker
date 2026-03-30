@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/postcss';
 
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
+  html: {
+    title: 'Fairys Mocker',
+  },
   plugins: [pluginReact()],
   tools: {
     postcss: {

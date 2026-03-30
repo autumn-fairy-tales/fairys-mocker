@@ -6,7 +6,7 @@
     "-----": "============================cli=============================",
     "start": "npm run-script start --workspace @fairys/mocker-cli",
     "----": "============================ui=============================",
-    "watch": "npm run-script watch --workspace @fairys/mocker-ui",
+    "dev": "npm run-script dev --workspace @fairys/mocker-ui",
     "build": "npm run-script build --workspace @fairys/mocker-ui",
     "-------": "============================docs=============================",
     "build:docs": "npm run-script build --workspace docs",
