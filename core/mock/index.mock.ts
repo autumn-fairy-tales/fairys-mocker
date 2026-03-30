@@ -1,5 +1,5 @@
 // Mock 配置文件
-// 自动生成于 2026-03-30T04:42:16.287Z
+// 自动生成于 2026-03-30T05:21:20.194Z
 
 interface MockerItem {
   /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
@@ -15,7 +15,7 @@ interface MockerItem {
   /**响应体格式类型*/
   bodyFormat: 'object' | 'list';
   /**列表数据条数（仅 list 格式有效）*/
-  listCount: number;
+  listCount?: number;
 }
 
 /**mock配置 列表*/
@@ -30,9 +30,10 @@ export const mockList: DefineMockList = [
     "body": {
       "code": 200,
       "data": {
-        "id": "650000200603111285",
-        "name": "Brenda Perez",
-        "email": "s.yjjhoto@wfndtekojd.cc"
+        "id": "120000199208193584",
+        "name": "Angela Hernandez",
+        "email": "b.stmrydgo@kgoowqm.so",
+        "d": 13
       },
       "message": "success"
     },
@@ -50,129 +51,129 @@ export const mockList: DefineMockList = [
       "data": {
         "rows": [
           {
-            "id": "620000200302195352",
-            "name": "Brian Moore"
+            "id": "230000199408081136",
+            "name": "Jose Taylor"
           },
           {
-            "id": "210000199005094588",
-            "name": "Melissa Martin"
+            "id": "370000202302271842",
+            "name": "Ruth Rodriguez"
           },
           {
-            "id": "520000202302206782",
-            "name": "Larry Garcia"
+            "id": "320000201008080371",
+            "name": "Melissa Miller"
           },
           {
-            "id": "410000199704037555",
-            "name": "Michelle Allen"
+            "id": "620000201604293139",
+            "name": "Robert Lewis"
           },
           {
-            "id": "620000201904197720",
-            "name": "Donna Young"
+            "id": "510000201803146742",
+            "name": "Thomas Davis"
           },
           {
-            "id": "310000197808263685",
-            "name": "Jennifer Lee"
+            "id": "710000200812253315",
+            "name": "Deborah Davis"
           },
           {
-            "id": "520000199905161478",
-            "name": "Sandra Lee"
+            "id": "810000197110249273",
+            "name": "Sarah Thompson"
           },
           {
-            "id": "220000199106143141",
-            "name": "Kevin Hall"
+            "id": "32000019710527841X",
+            "name": "David Perez"
           },
           {
-            "id": "140000198004044535",
-            "name": "Larry Brown"
+            "id": "410000198507128162",
+            "name": "Michael Wilson"
           },
           {
-            "id": "540000198502068358",
-            "name": "Amy Harris"
+            "id": "410000200812226332",
+            "name": "Donald Clark"
           },
           {
-            "id": "65000020120925280X",
-            "name": "Kimberly Robinson"
+            "id": "310000197701123842",
+            "name": "Sandra Johnson"
           },
           {
-            "id": "540000198208113402",
-            "name": "Cynthia Walker"
+            "id": "460000201606029366",
+            "name": "Thomas Rodriguez"
           },
           {
-            "id": "540000197212012423",
-            "name": "Paul Walker"
+            "id": "820000202112167285",
+            "name": "Brenda Walker"
           },
           {
-            "id": "410000199903190659",
-            "name": "Anthony Hernandez"
+            "id": "360000198206018125",
+            "name": "Susan Martinez"
           },
           {
-            "id": "360000197408157065",
-            "name": "Jose Martinez"
+            "id": "820000202302106280",
+            "name": "Anna Wilson"
           },
           {
-            "id": "420000198901268448",
-            "name": "Kenneth Garcia"
+            "id": "32000019760120855X",
+            "name": "Charles Wilson"
           },
           {
-            "id": "810000201804248717",
-            "name": "David Jackson"
+            "id": "640000201003313935",
+            "name": "Karen Clark"
           },
           {
-            "id": "530000198710181070",
-            "name": "Kimberly Johnson"
+            "id": "330000199205015095",
+            "name": "Betty Allen"
           },
           {
-            "id": "230000199512307350",
-            "name": "Laura Thomas"
+            "id": "350000201607139537",
+            "name": "Kevin Davis"
           },
           {
-            "id": "440000199612034176",
-            "name": "Mark Jones"
+            "id": "430000198105196289",
+            "name": "Eric Jones"
           }
         ],
         "list": [
           {
-            "id": "37000019710618561X",
-            "name": "Maria Johnson"
+            "id": "310000200306077529",
+            "name": "Jason Moore"
           },
           {
-            "id": "540000200710093312",
-            "name": "Carol Wilson"
+            "id": "350000198701194861",
+            "name": "Eric Hernandez"
           },
           {
-            "id": "320000197302178813",
-            "name": "Barbara Miller"
+            "id": "410000201409253351",
+            "name": "Brenda Miller"
           },
           {
-            "id": "230000200611247774",
-            "name": "Charles Robinson"
+            "id": "460000197910279643",
+            "name": "John Perez"
           },
           {
-            "id": "350000202308274151",
-            "name": "Mary Thompson"
+            "id": "530000197209295459",
+            "name": "Scott Gonzalez"
           },
           {
-            "id": "150000199006213159",
-            "name": "Jeffrey Young"
+            "id": "710000201004195625",
+            "name": "John Jackson"
           },
           {
-            "id": "710000199810285203",
-            "name": "Robert Rodriguez"
+            "id": "310000200111208525",
+            "name": "Nancy Hall"
           },
           {
-            "id": "810000197910304269",
-            "name": "Karen Jones"
+            "id": "150000201909271077",
+            "name": "Steven Robinson"
           },
           {
-            "id": "220000197105316646",
-            "name": "Cynthia Wilson"
+            "id": "820000201305069687",
+            "name": "Lisa Hall"
           },
           {
-            "id": "510000198512125533",
-            "name": "Donald Lee"
+            "id": "450000201110142689",
+            "name": "Paul Perez"
           }
         ],
-        "total": 63
+        "total": 30
       }
     },
     "bodyFormat": "list",

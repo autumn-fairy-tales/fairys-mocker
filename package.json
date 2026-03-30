@@ -3,13 +3,15 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
+    "-----": "============================cli=============================",
+    "start": "npm run-script start --workspace @fairys/mocker-cli",
     "----": "============================ui=============================",
-    "watch": "npm run-script watch --workspace @fairys/mocker",
-    "build": "npm run-script build --workspace @fairys/mocker",
+    "watch": "npm run-script watch --workspace @fairys/mocker-ui",
+    "build": "npm run-script build --workspace @fairys/mocker-ui",
     "-------": "============================docs=============================",
     "build:docs": "npm run-script build --workspace docs",
     "docs": "npm run-script dev --workspace docs",
-    "build:all": "npm run build",
+    "build:all": "npm run build && npm run build:docs",
     "version": "lerna version --force-publish=* --no-changelog --no-git-tag-version --no-push",
     "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
   },
@@ -27,8 +29,8 @@
     "*.{js,jsx,tsx,ts,less,md,json}": "prettier --write"
   },
   "workspaces": [
+    "examples/*",
     "packages/*",
-    "core/*",
     "docs"
   ]
 }

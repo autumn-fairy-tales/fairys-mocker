@@ -1,0 +1,42 @@
+// Mock 配置文件
+// 自动生成于 2026-03-30T06:41:48.417Z
+
+interface MockerItem {
+  /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
+  /**状态码*/
+  status: string;
+  //配置响应延迟时间, 如果传入的是一个数组，则代表延迟时间的范围
+  delay: number | [number, number];
+  /**响应体(可以自定义返回格式)*/
+  body: any;
+  /**接口地址*/
+  url: string;
+  /**响应体格式类型*/
+  bodyFormat: 'object' | 'list';
+  /**列表数据条数（仅 list 格式有效）*/
+  listCount?: number;
+}
+
+/**mock配置 列表*/
+export type DefineMockList = MockerItem[];
+
+export const mockList: DefineMockList = [
+  {
+    "url": "/api/test1",
+    "method": "POST",
+    "status": "200",
+    "delay": 0,
+    "body": {
+      "code": 200,
+      "data": {
+        "id": "650000201212020583",
+        "name": "Sharon Williams",
+        "email": "s.nsi@qbcwjsaxh.hk"
+      },
+      "message": "success"
+    },
+    "bodyFormat": "object",
+    "listCount": 20
+  }
+];

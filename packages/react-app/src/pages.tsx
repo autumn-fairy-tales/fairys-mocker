@@ -22,35 +22,10 @@ interface MockerItem {
 /**mock配置 列表*/
 type DefineMockList = MockerItem[];
 
-export default function MockerPage() {
-  const [mockList, setMockList] = useState<DefineMockList>([
-    // {
-    //   url: '/api/test',
-    //   method: 'POST',
-    //   status: '200',
-    //   delay: 0,
-    //   body: { code: 200, data: { id: '@id', name: '@name', email: '@email' }, message: 'success' },
-    //   bodyFormat: 'object',
-    //   listCount: 20,
-    // },
-    // {
-    //   url: '/api/list',
-    //   method: 'POST',
-    //   status: '200',
-    //   delay: 0,
-    //   body: {
-    //     code: 200,
-    //     data: {
-    //       rows: [{ id: '@id', name: '@name' }],
-    //       total: '@integer(20, 100)'
-    //     },
-    //     message: 'success'
-    //   },
-    //   bodyFormat: 'list',
-    //   listCount: 20,
-    // },
-  ]);
+const API_BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : window.location.origin;
 
+export default function App() {
+  const [mockList, setMockList] = useState<DefineMockList>([]);
   const [response, setResponse] = useState<string>('');
   const [savePath, setSavePath] = useState<string>('mock');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,7 +36,7 @@ export default function MockerPage() {
   // 获取缓存数据的函数
   const fetchCacheData = useCallback(async () => {
     try {
-      const res = await fetch(`/api/mock?savePath=${encodeURIComponent(savePath)}`);
+      const res = await fetch(`${API_BASE_URL}/api/mock?savePath=${encodeURIComponent(savePath)}`);
       const data = await res.json();
       if (data.code === 200) {
         setMockList(data.data);
@@ -87,7 +62,15 @@ export default function MockerPage() {
       method: 'POST',
       status: '200',
       delay: 0,
-      body: { code: 200, data: {}, message: 'success' },
+      body: {
+        code: 200,
+        data: {
+          id: '@id',
+          name: '@name',
+          email: '@email',
+        },
+        message: 'success'
+      },
       bodyFormat: 'object',
       listCount: 20,
     }]);
@@ -160,7 +143,7 @@ export default function MockerPage() {
     }
 
     try {
-      const res = await fetch('/api/mock', {
+      const res = await fetch(`${API_BASE_URL}/api/mock`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -207,8 +190,8 @@ export default function MockerPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-4 sm:p-6">
       <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-semibold mb-2 text-center">Mocker 数据配置</h1>
-        <div className="text-center mb-6 text-sm text-zinc-500 dark:text-zinc-400">
+        <h1 className="text-2xl font-semibold mb-2 text-center text-zinc-800 dark:text-zinc-100">Mocker 数据配置</h1>
+        <div className="text-center mb-6 text-sm text-zinc-600 dark:text-zinc-300">
           当前配置总条数: {mockList.length}
         </div>
         <div className="space-y-6">
@@ -446,7 +429,7 @@ export default function MockerPage() {
         {response && (
           <div className="mt-8">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-medium text-zinc-700 dark:text-zinc-300">
+              <h2 className="text-lg font-medium text-zinc-800 dark:text-zinc-100">
                 保存结果
               </h2>
               <button
@@ -457,7 +440,7 @@ export default function MockerPage() {
                 清除
               </button>
             </div>
-            <pre className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-md overflow-x-auto text-sm">
+            <pre className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-md overflow-x-auto text-sm text-zinc-800 dark:text-zinc-100">
               {response}
             </pre>
           </div>
