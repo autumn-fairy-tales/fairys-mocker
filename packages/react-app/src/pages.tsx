@@ -188,13 +188,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black p-4 sm:p-6">
-      <div className="w-full mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6">
-        <h1 className="text-xl font-semibold mb-2 text-center text-zinc-800 dark:text-zinc-100">Mocker 数据配置</h1>
-        <div className="text-center mb-6 text-xs text-zinc-600 dark:text-zinc-300">
+    <div className="h-full bg-zinc-50 dark:bg-black p-4 sm:p-6 box-border overflow-hidden flex flex-col">
+      <div className="flex-1 w-full bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 box-border flex flex-col overflow-auto">
+        <h1 className="text-xl font-semibold mb-2 text-center text-zinc-800 dark:text-zinc-100 box-border">Mocker 数据配置</h1>
+        <div className="text-center mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border">
           当前配置总条数: {mockList.length}
         </div>
-        <div className="space-y-6">
+        <div className="space-y-6 flex-1 flex flex-col box-border  overflow-hidden">
           <div className="mb-6">
             <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
               数据保存到本地目录名
@@ -225,15 +225,15 @@ export default function App() {
             </p>
           </div>
           {mockList.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-zinc-200 dark:border-zinc-700">
+            <div className="flex-1 flex flex-col box-border overflow-auto">
+              <table className="border-collapse min-w-full border border-zinc-200 dark:border-zinc-700 relative">
                 <thead>
-                  <tr className="bg-zinc-100 dark:bg-zinc-800">
+                  <tr className="bg-zinc-100 dark:bg-zinc-800 sticky -top-px z-10">
                     <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">#</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">接口地址</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">请求方法</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">状态码</th>
-                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">延迟返回</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">响应延迟时间</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">响应体格式</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">生成数据条数</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">操作</th>
@@ -366,7 +366,6 @@ export default function App() {
               暂无接口配置，请点击"添加接口配置"按钮添加
             </div>
           )}
-
           <div className="flex justify-center">
             <button
               type="button"
@@ -384,27 +383,27 @@ export default function App() {
             </button>
           </div>
         </div>
-
         {response && (
-          <div className="mt-8">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
-                保存结果
-              </h2>
-              <button
-                type="button"
-                onClick={() => setResponse('')}
-                className="px-2 py-0.5 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-xs"
-              >
-                清除
-              </button>
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+            <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-lg shadow-xl p-4 flex flex-col w-full max-w-2xl max-h-[80%]">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
+                  保存结果
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setResponse('')}
+                  className="px-2 py-0.5 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-xs"
+                >
+                  关闭
+                </button>
+              </div>
+              <pre className="flex-1 overflow-auto bg-zinc-100 dark:bg-zinc-800 p-3 rounded-md overflow-x-auto text-xs text-zinc-800 dark:text-zinc-100">
+                {response}
+              </pre>
             </div>
-            <pre className="bg-zinc-100 dark:bg-zinc-800 p-3 rounded-md overflow-x-auto text-xs text-zinc-800 dark:text-zinc-100">
-              {response}
-            </pre>
           </div>
         )}
-
         {/* 响应体编辑模态框 */}
         {isModalOpen && currentIndex !== null && mockList?.[currentIndex] && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
