@@ -22,7 +22,7 @@ interface MockerItem {
 /**mock配置 列表*/
 type DefineMockList = MockerItem[];
 
-const API_BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : window.location.origin;
+const API_BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:6901' : window.location.origin;
 
 export default function App() {
   const [mockList, setMockList] = useState<DefineMockList>([]);
