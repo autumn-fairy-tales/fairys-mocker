@@ -189,14 +189,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-4 sm:p-6">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-semibold mb-2 text-center text-zinc-800 dark:text-zinc-100">Mocker 数据配置</h1>
-        <div className="text-center mb-6 text-sm text-zinc-600 dark:text-zinc-300">
+      <div className="w-full mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6">
+        <h1 className="text-xl font-semibold mb-2 text-center text-zinc-800 dark:text-zinc-100">Mocker 数据配置</h1>
+        <div className="text-center mb-6 text-xs text-zinc-600 dark:text-zinc-300">
           当前配置总条数: {mockList.length}
         </div>
         <div className="space-y-6">
           <div className="mb-6">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
               数据保存到本地目录名
             </label>
             <div className="flex gap-2">
@@ -207,12 +207,12 @@ export default function App() {
                   const newPath = e.target.value;
                   setSavePath(newPath);
                 }}
-                className="flex-1 px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
+                className="flex-1 px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
               />
               <button
                 type="button"
                 onClick={fetchCacheData}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors whitespace-nowrap"
+                className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors whitespace-nowrap text-xs"
               >
                 查询
               </button>
@@ -224,202 +224,161 @@ export default function App() {
               工作目录下保存路径: /{savePath || 'mocker'}
             </p>
           </div>
-          {mockList.map((item, index) => (
-            <div key={index} className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 mb-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-medium text-zinc-700 dark:text-zinc-300">
-                  接口配置 #{index + 1}
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => removeMockerItem(index)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-                >
-                  删除
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    <span className="text-red-500">*</span> 接口地址
-                  </label>
-                  <input
-                    type="text"
-                    value={item.url}
-                    onChange={(e) => updateMockerItem(index, 'url', e.target.value)}
-                    className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    <span className="text-red-500">*</span> 请求方法
-                  </label>
-                  <select
-                    value={item.method}
-                    onChange={(e) => updateMockerItem(index, 'method', e.target.value)}
-                    className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                  >
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="PUT">PUT</option>
-                    <option value="DELETE">DELETE</option>
-                    <option value="PATCH">PATCH</option>
-                    <option value="HEAD">HEAD</option>
-                    <option value="OPTIONS">OPTIONS</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    <span className="text-red-500">*</span> 状态码
-                  </label>
-                  <input
-                    type="text"
-                    value={item.status}
-                    onChange={(e) => updateMockerItem(index, 'status', e.target.value)}
-                    className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                    placeholder="例如: 200, 400, 500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    延迟返回 (毫秒，数组格式: [最小值, 最大值])
-                  </label>
-                  <input
-                    type="text"
-                    value={Array.isArray(item.delay) ? `${item.delay[0]},${item.delay[1]}` : item.delay}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.includes(',')) {
-                        const [min, max] = value.split(',').map(Number);
-                        updateMockerItem(index, 'delay', [min, max]);
-                      } else {
-                        updateMockerItem(index, 'delay', parseInt(value) || 0);
-                      }
-                    }}
-                    className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                    placeholder="例如: 1000 或 500,2000"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    <span className="text-red-500">*</span> 响应体格式
-                  </label>
-                  <select
-                    value={item.bodyFormat}
-                    onChange={(e) => {
-                      const newFormat = e.target.value as 'object' | 'list';
-                      updateMockerItem(index, 'bodyFormat', newFormat);
-                      // 根据选择的格式更新响应体内容
-                      if (newFormat === 'object') {
-                        updateMockerItem(index, 'body', {
-                          code: 200,
-                          data: { id: '@id', name: '@name', email: '@email' },
-                          message: 'success'
-                        });
-                      } else {
-                        updateMockerItem(index, 'body', {
-                          code: 200,
-                          data: {
-                            rows: [{ id: '@id', name: '@name' }],
-                            total: '@integer(20, 100)'
-                          },
-                          message: 'success'
-                        });
-                      }
-                    }}
-                    className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                  >
-                    <option value="object">对象</option>
-                    <option value="list">对象数组</option>
-                  </select>
-                </div>
-
-                {item.bodyFormat === 'list' ? (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        <span className="text-red-500">*</span> 生成数据条数
-                      </label>
-                      <input
-                        type="number"
-                        value={item.listCount}
-                        onChange={(e) => updateMockerItem(index, 'listCount', parseInt(e.target.value) || 1)}
-                        min="1"
-                        max="100"
-                        className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                      />
-                    </div>
-                  </>
-                ) : <></>}
-              </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  <span className="text-red-500">*</span> 响应体 (支持 Mock.js 语法)
-                </label>
-                <div className="flex justify-end mb-2">
-                  <button
-                    type="button"
-                    onClick={() => openBodyModal(index)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                  >
-                    编辑
-                  </button>
-                </div>
-                <textarea
-                  value={textareaValues[index] || JSON.stringify(item.body, null, 2)}
-                  onChange={(e) => {
-                    // 先更新本地状态，保持光标位置
-                    setTextareaValues(prev => ({
-                      ...prev,
-                      [index]: e.target.value
-                    }));
-                    // 然后尝试解析并更新 mockList
-                    try {
-                      const body = JSON.parse(e.target.value);
-                      updateMockerItem(index, 'body', body);
-                    } catch (error) {
-                      // 解析失败时不更新 mockList，但保持本地状态
-                    }
-                  }}
-                  onBlur={() => {
-                    // 失去焦点时清除本地状态，确保与 mockList 同步
-                    setTextareaValues(prev => {
-                      const newValues = { ...prev };
-                      delete newValues[index];
-                      return newValues;
-                    });
-                  }}
-                  className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white min-h-[150px]"
-                  placeholder='例如: {"code": 200, "data": {"id": "@id", "name": "@name"}, "message": "success"} 或 {"code": 200, "data": {"rows": [{"id": "@id", "name": "@name"}], "total": "@integer(20, 100)"}, "message": "success"}'
-                />
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  支持使用 <a href="http://mockjs.com/examples.html" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Mock.js 语法</a>，如 @id, @name, @email 等，
-                  <span className='text-red-500'>数组为特殊处理，仅支持 (<b>字段|条数</b>)</span>
-                </p>
-              </div>
+          {mockList.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-zinc-200 dark:border-zinc-700">
+                <thead>
+                  <tr className="bg-zinc-100 dark:bg-zinc-800">
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">#</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">接口地址</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">请求方法</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">状态码</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">延迟返回</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">响应体格式</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">生成数据条数</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockList.map((item, index) => (
+                    <tr key={index} className="hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                      <td className="px-2 py-2 text-xs text-zinc-800 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700">
+                        {index + 1}
+                      </td>
+                      <td className="px-2 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                        <input
+                          type="text"
+                          value={item.url}
+                          onChange={(e) => updateMockerItem(index, 'url', e.target.value)}
+                          className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                        />
+                      </td>
+                      <td className="px-2 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                        <select
+                          value={item.method}
+                          onChange={(e) => updateMockerItem(index, 'method', e.target.value)}
+                          className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                        >
+                          <option value="GET">GET</option>
+                          <option value="POST">POST</option>
+                          <option value="PUT">PUT</option>
+                          <option value="DELETE">DELETE</option>
+                          <option value="PATCH">PATCH</option>
+                          <option value="HEAD">HEAD</option>
+                          <option value="OPTIONS">OPTIONS</option>
+                        </select>
+                      </td>
+                      <td className="px-2 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                        <input
+                          type="text"
+                          value={item.status}
+                          onChange={(e) => updateMockerItem(index, 'status', e.target.value)}
+                          className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                          placeholder="例如: 200, 400, 500"
+                        />
+                      </td>
+                      <td className="px-2 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                        <input
+                          type="text"
+                          value={Array.isArray(item.delay) ? `${item.delay[0]},${item.delay[1]}` : item.delay}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value.includes(',')) {
+                              const [min, max] = value.split(',').map(Number);
+                              updateMockerItem(index, 'delay', [min, max]);
+                            } else {
+                              updateMockerItem(index, 'delay', parseInt(value) || 0);
+                            }
+                          }}
+                          className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                          placeholder="例如: 1000 或 500,2000"
+                        />
+                      </td>
+                      <td className="px-2 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                        <select
+                          value={item.bodyFormat}
+                          onChange={(e) => {
+                            const newFormat = e.target.value as 'object' | 'list';
+                            updateMockerItem(index, 'bodyFormat', newFormat);
+                            // 根据选择的格式更新响应体内容
+                            if (newFormat === 'object') {
+                              updateMockerItem(index, 'body', {
+                                code: 200,
+                                data: { id: '@id', name: '@name', email: '@email' },
+                                message: 'success'
+                              });
+                            } else {
+                              updateMockerItem(index, 'body', {
+                                code: 200,
+                                data: {
+                                  rows: [{ id: '@id', name: '@name' }],
+                                  total: '@integer(20, 100)'
+                                },
+                                message: 'success'
+                              });
+                            }
+                          }}
+                          className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                        >
+                          <option value="object">对象</option>
+                          <option value="list">对象数组</option>
+                        </select>
+                      </td>
+                      <td className="px-2 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                        {item.bodyFormat === 'list' ? (
+                          <input
+                            type="number"
+                            value={item.listCount}
+                            onChange={(e) => updateMockerItem(index, 'listCount', parseInt(e.target.value) || 1)}
+                            min="1"
+                            max="100"
+                            className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                          />
+                        ) : (
+                          <span className="text-zinc-500 dark:text-zinc-400 text-xs">N/A</span>
+                        )}
+                      </td>
+                      <td className="px-2 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                        <div className="flex space-x-1">
+                          <button
+                            type="button"
+                            onClick={() => openBodyModal(index)}
+                            className="px-2 py-0.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
+                          >
+                            编辑响应体数据
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeMockerItem(index)}
+                            className="px-2 py-0.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-xs"
+                          >
+                            删除
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
+          ) : (
+            <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
+              暂无接口配置，请点击"添加接口配置"按钮添加
+            </div>
+          )}
 
           <div className="flex justify-center">
             <button
               type="button"
               onClick={addMockerItem}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors mr-4"
+              className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors mr-4 text-xs"
             >
               添加接口配置
             </button>
             <button
               type="button"
               onClick={handleSubmit}
-              className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              className="px-4 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
             >
               保存配置
             </button>
@@ -429,30 +388,30 @@ export default function App() {
         {response && (
           <div className="mt-8">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-medium text-zinc-800 dark:text-zinc-100">
+              <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
                 保存结果
               </h2>
               <button
                 type="button"
                 onClick={() => setResponse('')}
-                className="px-3 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-sm"
+                className="px-2 py-0.5 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-xs"
               >
                 清除
               </button>
             </div>
-            <pre className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-md overflow-x-auto text-sm text-zinc-800 dark:text-zinc-100">
+            <pre className="bg-zinc-100 dark:bg-zinc-800 p-3 rounded-md overflow-x-auto text-xs text-zinc-800 dark:text-zinc-100">
               {response}
             </pre>
           </div>
         )}
 
         {/* 响应体编辑模态框 */}
-        {isModalOpen && (
+        {isModalOpen && currentIndex !== null && mockList?.[currentIndex] && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-lg shadow-xl p-6 w-full max-w-2xl">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-medium text-zinc-700 dark:text-zinc-300">
-                  编辑响应体 - 接口配置 #{currentIndex !== null ? currentIndex + 1 : ''}
+            <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-lg shadow-xl p-4 w-full max-w-2xl">
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  编辑响应体数据 - 接口配置 #{currentIndex + 1}
                 </h2>
                 <button
                   type="button"
@@ -462,33 +421,85 @@ export default function App() {
                   ×
                 </button>
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  响应体 JSON
-                </label>
-                <textarea
-                  value={modalBody}
-                  onChange={(e) => setModalBody(e.target.value)}
-                  className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white min-h-[400px]"
-                  placeholder='例如: {"code": 200, "data": {"id": "@id", "name": "@name"}, "message": "success"} 或 {"code": 200, "data": {"rows": [{"id": "@id", "name": "@name"}], "total": "@integer(20, 100)"}, "message": "success"}'
-                />
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    响应体格式 <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={mockList?.[currentIndex]?.bodyFormat}
+                    onChange={(e) => {
+                      const newFormat = e.target.value as 'object' | 'list';
+                      updateMockerItem(currentIndex, 'bodyFormat', newFormat);
+                      // 根据选择的格式更新响应体内容
+                      if (newFormat === 'object') {
+                        updateMockerItem(currentIndex, 'body', {
+                          code: 200,
+                          data: { id: '@id', name: '@name', email: '@email' },
+                          message: 'success'
+                        });
+                        setModalBody(JSON.stringify({ code: 200, data: { id: '@id', name: '@name', email: '@email' }, message: 'success' }, null, 2));
+                      } else {
+                        updateMockerItem(currentIndex, 'body', {
+                          code: 200,
+                          data: {
+                            rows: [{ id: '@id', name: '@name' }],
+                            total: '@integer(20, 100)'
+                          },
+                          message: 'success'
+                        });
+                        setModalBody(JSON.stringify({ code: 200, data: { rows: [{ id: '@id', name: '@name' }], total: '@integer(20, 100)' }, message: 'success' }, null, 2));
+                      }
+                    }}
+                    className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                  >
+                    <option value="object">对象</option>
+                    <option value="list">对象数组</option>
+                  </select>
+                </div>
+                {mockList[currentIndex].bodyFormat === 'list' && (
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                      生成数据条数 <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={mockList[currentIndex].listCount}
+                      onChange={(e) => updateMockerItem(currentIndex, 'listCount', parseInt(e.target.value) || 1)}
+                      min="1"
+                      max="100"
+                      className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    响应体 JSON <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={modalBody}
+                    onChange={(e) => setModalBody(e.target.value)}
+                    className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white min-h-[300px] text-xs"
+                    placeholder='例如: {"code": 200, "data": {"id": "@id", "name": "@name"}, "message": "success"} 或 {"code": 200, "data": {"rows": [{"id": "@id", "name": "@name"}], "total": "@integer(20, 100)"}, "message": "success"}'
+                  />
+                </div>
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                 支持使用 <a href="http://mockjs.com/examples.html" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Mock.js 语法</a>，如 @id, @name, @email 等，
                 <span className='text-red-500'>数组为特殊处理，仅支持 (<b>字段|条数</b>)</span>
               </p>
-              <div className="flex justify-end space-x-3">
+              <div className="flex justify-end space-x-2 mt-3">
                 <button
                   type="button"
                   onClick={closeBodyModal}
-                  className="px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                  className="px-3 py-1 border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-600 transition-colors text-xs"
                 >
                   取消
                 </button>
                 <button
                   type="button"
                   onClick={saveBodyModal}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                  className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
                 >
                   保存
                 </button>

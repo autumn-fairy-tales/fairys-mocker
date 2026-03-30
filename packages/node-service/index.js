@@ -10,10 +10,16 @@ app.use(express.json());
 app.use(cors());
 
 // 静态文件服务
-const staticDir = path.join(__dirname, 'public/dist');
+const staticDir = path.join(__dirname, 'public');
 if (fs.existsSync(staticDir)) {
   app.use(express.static(staticDir));
-  // console.log(`Static files served from ${staticDir}`);
+  console.log(`Static files served from ${staticDir}`);
+} else {
+  const distDir = path.join(__dirname, 'dist');
+  if (fs.existsSync(distDir)) {
+    app.use(express.static(distDir));
+    console.log(`Static files served from ${distDir}`);
+  }
 }
 
 // 定义接口
