@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "mockjs": "^1.1.0"
   },
   "devDependencies": {
+    "@types/mockjs": "^1.0.10",
     "@rsbuild/core": "^1.7.1",
     "@rsbuild/plugin-react": "^1.4.2",
     "@tailwindcss/postcss": "^4.2.2",

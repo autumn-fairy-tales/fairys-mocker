@@ -1,8 +1,9 @@
 'use client';
+import React, { useState, useEffect, useCallback, useRef, Fragment } from 'react';
+import { createMockData } from './utils';
+import { svgIcons, type IconType, iconTypeColor } from './assets/icon';
 
-import React, { useState, useEffect, useCallback } from 'react';
-
-interface MockerItem {
+export interface MockerItem {
   /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
   /**状态码*/
@@ -19,19 +20,46 @@ interface MockerItem {
   listCount: number;
 }
 
+class Message {
+  _updated: React.Dispatch<React.SetStateAction<{}>> | undefined = undefined;
+  messageList: { type: IconType, message: React.ReactNode, id: string }[] = []
+  open = (type: IconType, message: React.ReactNode) => {
+    const id = new Date().valueOf().toString();
+    this.messageList.push({ type, message, id: id });
+    this._updated?.({});
+    const timer = setTimeout(() => {
+      this.messageList = this.messageList.filter(item => item.id !== id);
+      this._updated?.({});
+      clearTimeout(timer);
+    }, 3000);
+  }
+}
+const useMessage = () => {
+  const ref = useRef<Message>(null);
+  if (!ref.current) {
+    ref.current = new Message();
+  }
+  return ref.current;
+};
+
 /**mock配置 列表*/
 type DefineMockList = MockerItem[];
 
 const API_BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:6901' : window.location.origin;
 
 export default function App() {
+  const [, _updated] = useState({});
+  const message = useMessage();
+  message._updated = _updated;
+
   const [mockList, setMockList] = useState<DefineMockList>([]);
   const [response, setResponse] = useState<string>('');
   const [savePath, setSavePath] = useState<string>('mock');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [modalBody, setModalBody] = useState<string>('');
-  const [textareaValues, setTextareaValues] = useState<Record<number, string>>({});
+  /**是否存在服务端*/
+  const isServer = useRef(true);
 
   // 获取缓存数据的函数
   const fetchCacheData = useCallback(async () => {
@@ -47,6 +75,7 @@ export default function App() {
         setMockList([]);
       }
     } catch (error) {
+      isServer.current = false;
       console.error('获取缓存数据失败:', error);
     }
   }, [savePath]);
@@ -138,21 +167,26 @@ export default function App() {
     }
 
     if (!isValid) {
-      alert(errorMessage + ', 请查看其他项是否填写完整');
+      message.open('error', errorMessage);
       return;
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/mock`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mockList, savePath }),
-      });
+      if (isServer.current) {
+        const res = await fetch(`${API_BASE_URL}/api/mock`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ mockList, savePath }),
+        });
 
-      const data = await res.json();
-      setResponse(JSON.stringify(data, null, 2));
+        const data = await res.json();
+        setResponse(JSON.stringify(data, null, 2));
+      } else {
+        const mockData = createMockData(mockList);
+        setResponse(JSON.stringify(mockData, null, 2));
+      }
     } catch (error) {
       setResponse('Error: ' + (error as Error).message);
     }
@@ -182,13 +216,28 @@ export default function App() {
         closeBodyModal();
       } catch (error) {
         // 解析失败时不更新
-        alert('JSON 格式错误，请检查输入');
+        message.open('error', 'JSON 格式错误，请检查输入');
       }
     }
   };
 
   return (
     <div className="h-full bg-zinc-50 dark:bg-black p-4 sm:p-6 box-border overflow-hidden flex flex-col">
+      {Array.isArray(message.messageList) ? <div
+        className='fixed inset-0 flex flex-col items-center z-90 gap-2 py-2 box-border pointer-events-none'
+      >
+        {message.messageList.map((item) => {
+          const Icon = svgIcons[item.type];
+          const color = iconTypeColor[item.type];
+          return <div
+            key={item.id}
+            className='shadow-md py-2 px-4 box-border rounded-lg bg-white text-xs flex items-center gap-2'
+          >
+            {Icon ? <Icon className={color} /> : <Fragment />}
+            {item.message}
+          </div>
+        })}
+      </div> : <Fragment />}
       <div className="flex-1 w-full bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 box-border flex flex-col overflow-auto">
         <h1 className="text-xl font-semibold mb-2 text-center text-zinc-800 dark:text-zinc-100 box-border">Mocker 数据配置</h1>
         <div className="text-center mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border">
@@ -390,13 +439,26 @@ export default function App() {
                 <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
                   保存结果
                 </h2>
-                <button
-                  type="button"
-                  onClick={() => setResponse('')}
-                  className="px-2 py-0.5 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-xs"
-                >
-                  关闭
-                </button>
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    title="复制"
+                    onClick={() => {
+                      navigator.clipboard.writeText(response);
+                      message.open('success', '复制成功');
+                    }}
+                    className="px-2 py-0.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
+                  >
+                    复制
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setResponse('')}
+                    className="px-2 py-0.5 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-xs"
+                  >
+                    关闭
+                  </button>
+                </div>
               </div>
               <pre className="flex-1 overflow-auto bg-zinc-100 dark:bg-zinc-800 p-3 rounded-md overflow-x-auto text-xs text-zinc-800 dark:text-zinc-100">
                 {response}
