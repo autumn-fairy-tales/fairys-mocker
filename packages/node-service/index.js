@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 // 静态文件服务
-const staticDir = path.join(__dirname, 'dist');
+const staticDir = path.join(__dirname, 'public/dist');
 if (fs.existsSync(staticDir)) {
   app.use(express.static(staticDir));
   // console.log(`Static files served from ${staticDir}`);

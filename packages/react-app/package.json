@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "copy": "cp -r dist ../node-service/",
+    "copy": "cp -r dist ../node-service/public/",
     "build": "rsbuild build && npm run copy",
     "dev": "rsbuild dev --open",
     "preview": "rsbuild preview"
