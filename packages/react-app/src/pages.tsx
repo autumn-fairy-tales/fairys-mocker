@@ -23,7 +23,7 @@ export interface MockerItem {
 class Message {
   _updated: React.Dispatch<React.SetStateAction<{}>> | undefined = undefined;
   messageList: { type: IconType, message: React.ReactNode, id: string }[] = []
-  open = (type: IconType, message: React.ReactNode) => {
+  open = (type: IconType, message: React.ReactNode, duration = 3000) => {
     const id = new Date().valueOf().toString();
     this.messageList.push({ type, message, id: id });
     this._updated?.({});
@@ -31,7 +31,7 @@ class Message {
       this.messageList = this.messageList.filter(item => item.id !== id);
       this._updated?.({});
       clearTimeout(timer);
-    }, 3000);
+    }, duration);
   }
 }
 const useMessage = () => {
@@ -171,6 +171,28 @@ export default function App() {
       return;
     }
 
+    // 校验接口地址+请求方法是否重复
+    const seenCombinations = new Map<string, number[]>();
+    for (let i = 0; i < mockList.length; i++) {
+      const item = mockList[i];
+      const combination = `${item.url.trim()}:${item.method}`;
+      if (seenCombinations.has(combination)) {
+        seenCombinations.get(combination)?.push(i + 1);
+      } else {
+        seenCombinations.set(combination, [i + 1]);
+      }
+    }
+    if (seenCombinations.size > 0) {
+      let errorMessage = []
+      for (let [key, value] of seenCombinations) {
+        if (value.length > 1)
+          errorMessage.push(<div key={key}>第 {value.join(',')} 行数据 接口地址和请求方法 组合重复;</div>);
+      }
+      if (errorMessage.length > 0) {
+        message.open('error', errorMessage, 5000);
+        return;
+      }
+    }
     try {
       if (isServer.current) {
         const res = await fetch(`${API_BASE_URL}/api/mock`, {
@@ -182,10 +204,18 @@ export default function App() {
         });
 
         const data = await res.json();
-        setResponse(JSON.stringify(data, null, 2));
+        if (mockList.length > 0) {
+          setResponse(JSON.stringify(data, null, 2));
+        } else if (data.code === 200) {
+          message.open('success', "保存成功");
+        }
       } else {
-        const mockData = createMockData(mockList);
-        setResponse(JSON.stringify(mockData, null, 2));
+        if (mockList.length > 0) {
+          const mockData = createMockData(mockList);
+          setResponse(JSON.stringify(mockData, null, 2));
+        } else {
+          message.open('success', "操作成功");
+        }
       }
     } catch (error) {
       setResponse('Error: ' + (error as Error).message);
@@ -231,10 +261,10 @@ export default function App() {
           const color = iconTypeColor[item.type];
           return <div
             key={item.id}
-            className='shadow-md py-2 px-4 box-border rounded-lg bg-white text-xs flex items-center gap-2'
+            className='shadow-md py-2 px-4 box-border rounded-lg bg-white text-xs flex items-center gap-2 flex-wrap'
           >
             {Icon ? <Icon className={color} /> : <Fragment />}
-            {item.message}
+            <div>{item.message}</div>
           </div>
         })}
       </div> : <Fragment />}
