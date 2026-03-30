@@ -1,0 +1,46 @@
+[
+  {
+    "url": "/api/test",
+    "method": "POST",
+    "status": "200",
+    "delay": 0,
+    "body": {
+      "code": 200,
+      "data": {
+        "id": "@id",
+        "name": "@name",
+        "email": "@email"
+      },
+      "message": "success"
+    },
+    "bodyFormat": "object",
+    "listCount": 20
+  },
+  {
+    "url": "/api/list",
+    "method": "POST",
+    "status": "200",
+    "delay": 0,
+    "body": {
+      "code": 200,
+      "data": {
+        "rows": [
+          {
+            "id": "@id",
+            "name": "@name"
+          }
+        ],
+        "list|10": [
+          {
+            "id": "@id",
+            "name": "@name"
+          }
+        ],
+        "total": "@integer(20, 100)"
+      },
+      "message": "success"
+    },
+    "bodyFormat": "list",
+    "listCount": 20
+  }
+]

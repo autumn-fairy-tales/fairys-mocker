@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface MockerItem {
   /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
@@ -38,7 +38,14 @@ export default function MockerPage() {
       method: 'POST',
       status: '200',
       delay: 0,
-      body: { code: 200, data: { rows: [{ id: '@id', name: '@name' }], total: '@integer(20, 100)' }, message: 'success' },
+      body: {
+        code: 200,
+        data: {
+          rows: [{ id: '@id', name: '@name' }],
+          total: '@integer(20, 100)'
+        },
+        message: 'success'
+      },
       bodyFormat: 'list',
       listCount: 20,
     },
@@ -49,6 +56,23 @@ export default function MockerPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [modalBody, setModalBody] = useState<string>('');
+
+  // 在组件加载时获取缓存的配置数据
+  useEffect(() => {
+    const fetchCacheData = async () => {
+      try {
+        const res = await fetch(`/api/mock?savePath=${encodeURIComponent(savePath)}`);
+        const data = await res.json();
+        if (data.code === 200) {
+          setMockList(data.data);
+        }
+      } catch (error) {
+        console.error('获取缓存数据失败:', error);
+      }
+    };
+
+    fetchCacheData();
+  }, [savePath]);
 
   const addMockerItem = () => {
     setMockList(prev => [...prev, {
@@ -74,6 +98,60 @@ export default function MockerPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // 校验所有必填字段
+    let isValid = true;
+    let errorMessage = '';
+
+    for (let i = 0; i < mockList.length; i++) {
+      const item = mockList[i];
+      // 校验接口地址
+      if (!item.url.trim()) {
+        isValid = false;
+        errorMessage = `接口配置 #${i + 1} 的 接口地址 不能为空`;
+        break;
+      }
+
+      // 校验请求方法
+      if (!item.method) {
+        isValid = false;
+        errorMessage = `接口配置 #${i + 1} 的 请求方法 不能为空`;
+        break;
+      }
+
+      // 校验状态码
+      if (!item.status.trim()) {
+        isValid = false;
+        errorMessage = `接口配置 #${i + 1} 的 状态码 不能为空`;
+        break;
+      }
+
+      // 校验响应体格式
+      if (!item.bodyFormat) {
+        isValid = false;
+        errorMessage = `接口配置 #${i + 1} 的 响应体格式 不能为空`;
+        break;
+      }
+
+      // 校验生成数据条数（仅 list 格式时）
+      if (item.bodyFormat === 'list' && (!item.listCount || item.listCount < 1)) {
+        isValid = false;
+        errorMessage = `接口配置 #${i + 1} 的 生成数据条数 必须大于 0`;
+        break;
+      }
+
+      // 校验响应体
+      if (!item.body) {
+        isValid = false;
+        errorMessage = `接口配置 #${i + 1} 的 响应体 不能为空`;
+        break;
+      }
+    }
+
+    if (!isValid) {
+      alert(errorMessage + ', 请查看其他项是否填写完整');
+      return;
+    }
+
     try {
       const res = await fetch('/api/mock', {
         method: 'POST',
@@ -162,7 +240,7 @@ export default function MockerPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    接口地址
+                    <span className="text-red-500">*</span> 接口地址
                   </label>
                   <input
                     type="text"
@@ -174,7 +252,7 @@ export default function MockerPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    请求方法
+                    <span className="text-red-500">*</span> 请求方法
                   </label>
                   <select
                     value={item.method}
@@ -193,7 +271,7 @@ export default function MockerPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    状态码
+                    <span className="text-red-500">*</span> 状态码
                   </label>
                   <input
                     type="text"
@@ -229,14 +307,13 @@ export default function MockerPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    响应体格式
+                    <span className="text-red-500">*</span> 响应体格式
                   </label>
                   <select
                     value={item.bodyFormat}
                     onChange={(e) => {
                       const newFormat = e.target.value as 'object' | 'list';
                       updateMockerItem(index, 'bodyFormat', newFormat);
-
                       // 根据选择的格式更新响应体内容
                       if (newFormat === 'object') {
                         updateMockerItem(index, 'body', {
@@ -262,26 +339,28 @@ export default function MockerPage() {
                   </select>
                 </div>
 
-                {item.bodyFormat === 'list' && (
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                      生成数据条数
-                    </label>
-                    <input
-                      type="number"
-                      value={item.listCount}
-                      onChange={(e) => updateMockerItem(index, 'listCount', parseInt(e.target.value) || 1)}
-                      min="1"
-                      max="100"
-                      className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                    />
-                  </div>
-                )}
+                {item.bodyFormat === 'list' ? (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                        <span className="text-red-500">*</span> 生成数据条数
+                      </label>
+                      <input
+                        type="number"
+                        value={item.listCount}
+                        onChange={(e) => updateMockerItem(index, 'listCount', parseInt(e.target.value) || 1)}
+                        min="1"
+                        max="100"
+                        className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
+                      />
+                    </div>
+                  </>
+                ) : <></>}
               </div>
 
               <div className="mt-4">
                 <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  响应体 (支持 Mock.js 语法)
+                  <span className="text-red-500">*</span> 响应体 (支持 Mock.js 语法)
                 </label>
                 <div className="flex justify-end mb-2">
                   <button
@@ -306,7 +385,8 @@ export default function MockerPage() {
                   placeholder='例如: {"code": 200, "data": {"id": "@id", "name": "@name"}, "message": "success"} 或 {"code": 200, "data": {"rows": [{"id": "@id", "name": "@name"}], "total": "@integer(20, 100)"}, "message": "success"}'
                 />
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  支持使用 <a href="http://mockjs.com/examples.html" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Mock.js 语法</a>，如 @id, @name, @email 等
+                  支持使用 <a href="http://mockjs.com/examples.html" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Mock.js 语法</a>，如 @id, @name, @email 等，
+                  <span className='text-red-500'>数组为特殊处理，仅支持 (<b>字段|条数</b>)</span>
                 </p>
               </div>
             </div>
@@ -364,10 +444,14 @@ export default function MockerPage() {
                 <textarea
                   value={modalBody}
                   onChange={(e) => setModalBody(e.target.value)}
-                  className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white min-h-[300px]"
+                  className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white min-h-[400px]"
                   placeholder='例如: {"code": 200, "data": {"id": "@id", "name": "@name"}, "message": "success"} 或 {"code": 200, "data": {"rows": [{"id": "@id", "name": "@name"}], "total": "@integer(20, 100)"}, "message": "success"}'
                 />
               </div>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                支持使用 <a href="http://mockjs.com/examples.html" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Mock.js 语法</a>，如 @id, @name, @email 等，
+                <span className='text-red-500'>数组为特殊处理，仅支持 (<b>字段|条数</b>)</span>
+              </p>
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"

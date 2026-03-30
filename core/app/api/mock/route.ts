@@ -20,8 +20,6 @@ interface MockerItem {
   listCount: number;
 }
 
-
-
 /**mock配置 列表*/
 type DefineMockList = MockerItem[];
 
@@ -32,28 +30,35 @@ export async function POST(request: NextRequest) {
     const processedList = mockList.map(item => {
       // 生成 Mock 数据
       let mockBody;
-
       if (item.bodyFormat === 'list') {
         // 为列表格式生成指定数量的数据
-        const listBody = { ...item.body };
-        if (listBody.data && listBody.data.rows) {
-          // 生成指定数量的行数据
-          const rows = [];
-          for (let i = 0; i < item.listCount; i++) {
-            rows.push(Mock.mock(listBody.data.rows[0]));
-          }
-          listBody.data.rows = rows;
-          // 生成总条数
-          if (listBody.data.total) {
-            listBody.data.total = Mock.mock(listBody.data.total);
+        let { data, ...listBody } = { ...item.body };
+        const saveData: Record<string, any> = {}
+        const objectKeys = Object.keys(data);
+        const listCount = item.listCount;
+        for (let index = 0; index < objectKeys.length; index++) {
+          const key = objectKeys[index];
+          const value = data[key];
+          if (Array.isArray(value)) {
+            /**数组的时候，判断字段是否有 个数 字段*/
+            const [_key, count] = key.split('|');
+            const _count = `${count || ''}`.trim();
+            const itemConfig = value?.[0];
+            if (itemConfig) {
+              saveData[_key] = Array.from({ length: _count ? Number(_count) : listCount }, () => Mock.mock(itemConfig));
+            }
+          } else {
+            const valueMock = Mock.mock({ [key]: value });
+            Object.assign(saveData, valueMock);
           }
         }
+        listBody.data = saveData;
+
         mockBody = listBody;
       } else {
         // 直接生成对象格式数据
         mockBody = Mock.mock(item.body);
       }
-
       // 处理延迟
       let delay = 0;
       if (Array.isArray(item.delay)) {
@@ -94,7 +99,7 @@ interface MockerItem {
   /**响应体格式类型*/
   bodyFormat: 'object' | 'list';
   /**列表数据条数（仅 list 格式有效）*/
-  listCount: number;
+  listCount?: number;
 }
 
 /**mock配置 列表*/
@@ -105,15 +110,54 @@ export const mockList: DefineMockList = ${JSON.stringify(processedList, null, 2)
 
     fs.writeFileSync(mockFilePath, mockFileContent);
 
+    // 存储原始的 mockList 到 .cache.json 文件
+    const cacheFilePath = path.join(mockerDir, '.cache.json');
+    const cacheFileContent = JSON.stringify(mockList, null, 2);
+    fs.writeFileSync(cacheFilePath, cacheFileContent);
+
     return NextResponse.json({
       code: 200,
       message: 'Mock 配置保存成功',
       data: processedList,
       filePath: mockFilePath,
+      cachePath: cacheFilePath,
     });
   } catch (error) {
     return NextResponse.json(
       { code: 500, message: '保存 Mock 配置失败', error: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const savePath = searchParams.get('savePath')?.trim() ?? 'mock';
+
+    // 读取 .cache.json 文件
+    const mockerDir = path.join(process.cwd(), savePath);
+    const cacheFilePath = path.join(mockerDir, '.cache.json');
+
+    if (fs.existsSync(cacheFilePath)) {
+      const cacheFileContent = fs.readFileSync(cacheFilePath, 'utf-8');
+      const mockList = JSON.parse(cacheFileContent);
+
+      return NextResponse.json({
+        code: 200,
+        message: '读取 Mock 配置成功',
+        data: mockList,
+        cachePath: cacheFilePath,
+      });
+    } else {
+      return NextResponse.json({
+        code: 404,
+        message: 'Mock 配置文件不存在',
+      });
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { code: 500, message: '读取 Mock 配置失败', error: (error as Error).message },
       { status: 500 }
     );
   }
