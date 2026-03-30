@@ -1,0 +1,34 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "----": "============================ui=============================",
+    "watch": "npm run-script watch --workspace @fairys/mocker",
+    "build": "npm run-script build --workspace @fairys/mocker",
+    "-------": "============================docs=============================",
+    "build:docs": "npm run-script build --workspace docs",
+    "docs": "npm run-script dev --workspace docs",
+    "build:all": "npm run build",
+    "version": "lerna version --force-publish=* --no-changelog --no-git-tag-version --no-push",
+    "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
+  },
+  "dependencies": {
+    "@carefrees/rslib": "~0.1.1",
+    "husky": "~9.1.7",
+    "lerna": "~8.2.3",
+    "lint-staged": "~16.1.4",
+    "mockjs": "^1.1.0",
+    "prettier": "~2.7.0",
+    "pretty-quick": "~4.2.2",
+    "typescript": "~5.9.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,tsx,ts,less,md,json}": "prettier --write"
+  },
+  "workspaces": [
+    "packages/*",
+    "core/*",
+    "docs"
+  ]
+}

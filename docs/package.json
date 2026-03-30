@@ -1,0 +1,19 @@
+{
+  "name": "docs",
+  "version": "1.1.4",
+  "private": true,
+  "homepage": "https://github.com/autumn-fairy-tales/fairys-mocker",
+  "description": "文档",
+  "scripts": {
+    "build": "rspress build",
+    "dev": "rspress dev",
+    "preview": "rspress preview"
+  },
+  "dependencies": {
+    "@rspress/core": "^2.0.1"
+  },
+  "devDependencies": {
+    "@rspress/plugin-preview": "~2.0.1",
+    "@types/node": "^24.3.0"
+  }
+}
