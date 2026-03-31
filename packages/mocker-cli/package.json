@@ -19,8 +19,8 @@
   },
   "scripts": {
     "start": "node bin/fairys-mocker",
-    "build": "tsc",
-    "watch": "tsc --watch"
+    "build": "carefrees-rslib build --node --esm",
+    "watch": "carefrees-rslib build --watch  --node  --esm"
   },
   "bin": {
     "fairys-mocker": "bin/fairys-mocker"

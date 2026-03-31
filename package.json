@@ -19,7 +19,7 @@
     "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
   },
   "dependencies": {
-    "@carefrees/rslib": "~0.1.1",
+    "@carefrees/rslib": "~0.1.2",
     "husky": "~9.1.7",
     "lerna": "~8.2.3",
     "lint-staged": "~16.1.4",
