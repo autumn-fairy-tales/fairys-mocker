@@ -123,7 +123,7 @@ export default mockList;
   @Post('/proxy')
   post_proxy(req: express.Request, res: express.Response) {
     try {
-      const { proxyConfig, dir, fileName = 'proxy', rootDir } = req.body;
+      const { proxyList, dir, fileName = 'proxy', rootDir } = req.body;
       let _rootDir = rootDir ?? utils.rootDir;
       if (rootDir && !fs.existsSync(rootDir)) {
         _rootDir = utils.rootDir;
@@ -152,14 +152,14 @@ export type ProxyItem = Record<string, string | {
   ws?: boolean
 }> 
 
-export const proxyConfig: ProxyItem = ${JSON.stringify(proxyConfig, null, 2)};
-export default proxyConfig;
+export const proxyList: ProxyItem = ${JSON.stringify(proxyList, null, 2)};
+export default proxyList;
     `;
       fs.writeFileSync(proxyFilePath, proxyFileContent);
       // 存储原始的 proxyConfig 到 .cache.json 文件
       const cacheFilePath = nodePath.join(mockerDir, safeSaveFileName + '.cache.json');
       const cacheFileContent = JSON.stringify({
-        proxyConfig,
+        proxyList,
         rootDir: utils.rootDir,
         dir: safeSavePath,
         fileName: safeSaveFileName,
@@ -169,7 +169,7 @@ export default proxyConfig;
       res.json({
         code: 200,
         message: '代理配置保存成功',
-        data: proxyConfig,
+        data: proxyList,
         rootDir: utils.rootDir,
         dir: safeSavePath,
         cache: safeSaveFileName + '.cache.json',
@@ -197,11 +197,11 @@ export default proxyConfig;
       if (fs.existsSync(cacheFilePath)) {
         const cacheFileContent = fs.readFileSync(cacheFilePath, 'utf-8');
         const cacheData = JSON.parse(cacheFileContent);
-        const proxyConfig = cacheData.proxyConfig || {};
+        const proxyList = cacheData.proxyList || [];
         res.json({
           code: 200,
           message: '读取代理配置成功',
-          data: proxyConfig,
+          data: proxyList,
           rootDir: rootDir,
           dir: savePath,
           cache: saveFileName + '.cache.json',

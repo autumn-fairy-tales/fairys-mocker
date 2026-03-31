@@ -14,19 +14,21 @@ export interface MockerItem {
   /**列表数据条数（仅 list 格式有效）*/
   listCount: number;
 }
+
 /**mock配置 列表*/
 export type DefineMockList = MockerItem[];
 
 /**
  * 代理配置参数
  */
-export type ProxyItem = Record<string, string | {
+export type ProxyItem = {
+  /**代理路径*/
+  path: string,
   /**转发地址*/
   target: string,
   /**路径重写*/
   pathRewrite?: Record<string, string>,
-  /**路径重写字符串*/
-  _pathRewrite?: string
   /**是否开启ws*/
   ws?: boolean
-}>
+}
+export type ProxyList = ProxyItem[];

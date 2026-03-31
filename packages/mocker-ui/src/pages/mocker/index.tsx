@@ -4,6 +4,7 @@ import { useProxyStore } from "@carefrees/valtio"
 import { useGlobalProxyStore } from "@/models"
 import { API_BASE_URL } from "@/utils"
 import type { MockerItem, DefineMockList } from "@/interface"
+import { Table } from '@/components/table';
 
 export default function MockerConfig() {
 
@@ -224,17 +225,11 @@ export default function MockerConfig() {
       modalBody: JSON.stringify(mockList[index].body, null, 2),
       isModalOpen: true,
     })
-    // setCurrentIndex(index);
-    // setModalBody(JSON.stringify(mockList[index].body, null, 2));
-    // setIsModalOpen(true);
     // 禁止页面滚动
     document.body.style.overflow = 'hidden';
   };
 
   const closeBodyModal = () => {
-    // setIsModalOpen(false);
-    // setCurrentIndex(null);
-    // setModalBody('');
     dispatch({
       currentIndex: undefined,
       modalBody: '',
@@ -324,7 +319,158 @@ export default function MockerConfig() {
       </div>
       {mockList.length > 0 ? (
         <div className="flex-1 flex flex-col box-border overflow-auto">
-          <table className="border-collapse min-w-full border border-zinc-200 dark:border-zinc-700 relative">
+          <Table<MockerItem>
+            columns={[
+              {
+                title: "#",
+                isIndex: true,
+                tdClassName: "px-2 py-2 text-xs text-zinc-800 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700"
+              },
+              {
+                title: "接口地址",
+                dataIndex: "url",
+                render(item, index) {
+                  return <input
+                    type="text"
+                    value={item.url}
+                    onChange={(e) => updateMockerItem(index, 'url', e.target.value)}
+                    className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                  />
+                },
+              },
+              {
+                title: "请求方法",
+                dataIndex: "method",
+                render(item, index) {
+                  return <select
+                    value={item.method}
+                    onChange={(e) => updateMockerItem(index, 'method', e.target.value)}
+                    className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                  >
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                    <option value="PATCH">PATCH</option>
+                    <option value="HEAD">HEAD</option>
+                    <option value="OPTIONS">OPTIONS</option>
+                  </select>
+                },
+              },
+              {
+                title: "状态码",
+                dataIndex: "status",
+                render(item, index) {
+                  return <input
+                    type="text"
+                    value={item.status}
+                    onChange={(e) => updateMockerItem(index, 'status', e.target.value)}
+                    className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                    placeholder="例如: 200, 400, 500"
+                  />
+                },
+              },
+              {
+                title: "响应延迟时间",
+                dataIndex: "delay",
+                render(item, index) {
+                  return <input
+                    type="text"
+                    // @ts-ignore
+                    value={Array.isArray(item.delay) ? `${item.delay[0]},${item.delay[1]}` : item.delay || ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.includes(',')) {
+                        const [min, max] = value.split(',').map(Number);
+                        updateMockerItem(index, 'delay', [min, max]);
+                      } else {
+                        updateMockerItem(index, 'delay', parseInt(value) || 0);
+                      }
+                    }}
+                    className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                    placeholder="例如: 1000 或 500,2000"
+                  />
+                },
+              },
+              {
+                title: "响应体格式",
+                dataIndex: "bodyFormat",
+                render(item, index) {
+                  return <select
+                    value={item.bodyFormat}
+                    onChange={(e) => {
+                      const newFormat = e.target.value as 'object' | 'list';
+                      updateMockerItem(index, 'bodyFormat', newFormat);
+                      // 根据选择的格式更新响应体内容
+                      if (newFormat === 'object') {
+                        updateMockerItem(index, 'body', {
+                          code: 200,
+                          data: { id: '@id', name: '@name', email: '@email' },
+                          message: 'success'
+                        });
+                      } else {
+                        updateMockerItem(index, 'body', {
+                          code: 200,
+                          data: {
+                            '_|rows': { id: '@id', name: '@name' },
+                            total: '@integer(20, 100)'
+                          },
+                          message: 'success'
+                        });
+                      }
+                    }}
+                    className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                  >
+                    <option value="object">对象</option>
+                    <option value="list">对象数组</option>
+                  </select>
+                },
+              },
+              {
+                title: "生成数据条数",
+                dataIndex: "listCount",
+                render(item, index) {
+                  return item.bodyFormat === 'list' ? (
+                    <input
+                      type="number"
+                      value={item.listCount}
+                      onChange={(e) => updateMockerItem(index, 'listCount', parseInt(e.target.value) || 1)}
+                      min="1"
+                      max="100"
+                      className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                    />
+                  ) : (
+                    <span className="text-zinc-500 dark:text-zinc-400 text-xs">N/A</span>
+                  )
+                }
+              },
+              {
+                title: "操作",
+                dataIndex: "operation",
+                render(_, index) {
+                  return <div className="flex space-x-1">
+                    <button
+                      type="button"
+                      onClick={() => openBodyModal(index)}
+                      className="px-2 py-0.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
+                    >
+                      编辑响应体数据
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeMockerItem(index)}
+                      className="px-2 py-0.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-xs"
+                    >
+                      删除
+                    </button>
+                  </div>
+                }
+              }
+
+            ]}
+            dataSource={mockList as MockerItem[]}
+          />
+          {/* <table className="border-collapse min-w-full border border-zinc-200 dark:border-zinc-700 relative">
             <thead>
               <tr className="bg-zinc-100 dark:bg-zinc-800 sticky -top-px z-10">
                 <th className="px-2 py-2 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700">#</th>
@@ -458,7 +604,7 @@ export default function MockerConfig() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table> */}
         </div>
       ) : (
         <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
