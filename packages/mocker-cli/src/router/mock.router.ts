@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import nodePath from "node:path"
 import createMockData from '@fairys/create-mock-data';
 import { Get, Post, Controller } from "../utils/decorator.js"
+import { utils } from "../utils/index.js"
 
 /**路由*/
 @Controller('/api')
@@ -11,12 +12,17 @@ export class MockRouter {
   post_mock(req: express.Request, res: express.Response) {
     // 定义接口
     try {
-      const { mockList, savePath, saveFileName = 'index.mock' } = req.body;
+      const { mockList, dir, fileName = 'index.mock', rootDir } = req.body;
+      let _rootDir = rootDir ?? utils.rootDir;
+      if (rootDir && !fs.existsSync(rootDir)) {
+        _rootDir = utils.rootDir;
+      }
+
       const processedList = createMockData(mockList)
       // 存储到本地文件
-      const safeSavePath = savePath.trim() ?? 'mock';
-      const safeSaveFileName = saveFileName.trim() ?? 'index.mock';
-      const mockerDir = nodePath.join(process.cwd(), safeSavePath);
+      const safeSavePath = dir.trim() ?? 'mock';
+      const safeSaveFileName = fileName.trim() ?? 'index.mock';
+      const mockerDir = nodePath.join(_rootDir, safeSavePath);
       if (!fs.existsSync(mockerDir)) {
         fs.mkdirSync(mockerDir, { recursive: true });
       }
@@ -24,7 +30,7 @@ export class MockRouter {
       const mockFileContent = `// Mock 配置文件
 // 自动生成于 ${new Date().toISOString()}
     
-interface MockerItem {
+export interface MockerItem {
   /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
   /**状态码*/
@@ -50,15 +56,22 @@ export default mockList;
       fs.writeFileSync(mockFilePath, mockFileContent);
       // 存储原始的 mockList 和 savePath 到 .cache.json 文件
       const cacheFilePath = nodePath.join(mockerDir, safeSaveFileName + '.cache.json');
-      const cacheFileContent = JSON.stringify({ mockList, savePath: safeSavePath, saveFileName: safeSaveFileName }, null, 2);
+      const cacheFileContent = JSON.stringify({
+        mockList,
+        rootDir: utils.rootDir,
+        dir: safeSavePath,
+        fileName: safeSaveFileName,
+        cache: safeSaveFileName + '.cache.json',
+      }, null, 2);
       fs.writeFileSync(cacheFilePath, cacheFileContent);
-
       res.json({
         code: 200,
         message: 'Mock 配置保存成功',
         data: processedList,
-        filePath: mockFilePath,
-        cachePath: cacheFilePath,
+        rootDir: utils.rootDir,
+        dir: safeSavePath,
+        cache: safeSaveFileName + '.cache.json',
+        fileName: safeSaveFileName,
       });
     } catch (error: any) {
       res.status(500).json({
@@ -72,24 +85,25 @@ export default mockList;
   @Get('/mock')
   get_mock(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query.savePath as string)?.trim() ?? 'mock';
-      const saveFileName = (req.query.saveFileName as string)?.trim() ?? 'index.mock';
+      const savePath = (req.query.dir as string)?.trim() ?? utils.dir;
+      const saveFileName = (req.query.fileName as string)?.trim() ?? utils.file;
+      const rootDir = (req.query.rootDir as string)?.trim() ?? utils.rootDir;
+
       // 读取 .cache.json 文件
-      const mockerDir = nodePath.join(process.cwd(), savePath);
+      const mockerDir = nodePath.join(rootDir, savePath);
       const cacheFilePath = nodePath.join(mockerDir, saveFileName + '.cache.json');
       if (fs.existsSync(cacheFilePath)) {
         const cacheFileContent = fs.readFileSync(cacheFilePath, 'utf-8');
         const cacheData = JSON.parse(cacheFileContent);
         const mockList = cacheData.mockList || cacheData;
-        const savedSavePath = cacheData.savePath || savePath;
-        const savedSaveFileName = cacheData.saveFileName || saveFileName;
         res.json({
           code: 200,
           message: '读取 Mock 配置成功',
           data: mockList,
-          savePath: savedSavePath,
-          cachePath: cacheFilePath,
-          saveFileName: savedSaveFileName,
+          rootDir: rootDir,
+          dir: savePath,
+          cache: saveFileName + '.cache.json',
+          fileName: saveFileName,
         });
       } else {
         res.json({

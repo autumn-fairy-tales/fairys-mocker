@@ -57,6 +57,7 @@ export default function App() {
   const [response, setResponse] = useState<string>('');
   const [savePath, setSavePath] = useState<string>('mock');
   const [saveFileName, setSaveFileName] = useState<string>('index.mock');
+  const [rootDir, setRootDir] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [modalBody, setModalBody] = useState<string>('');
@@ -64,12 +65,23 @@ export default function App() {
   const isServer = useRef(true);
 
   // 获取缓存数据的函数
-  const fetchCacheData = useCallback(async () => {
+  const fetchCacheData = async (isUseEffect?: boolean) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/mock?savePath=${encodeURIComponent(savePath)}&saveFileName=${encodeURIComponent(saveFileName)}`);
+      let res
+      if (isUseEffect === true) {
+        res = await fetch(`${API_BASE_URL}/api/mock`);
+      } else {
+        const params = `dir=${decodeURIComponent(savePath)}&fileName=${decodeURIComponent(saveFileName)}&rootDir=${decodeURIComponent(rootDir)}`
+        res = await fetch(`${API_BASE_URL}/api/mock?${params}`);
+      }
+
       const data = await res.json();
+
       if (data.code === 200) {
         setMockList(data.data);
+        setSavePath(data.dir);
+        setSaveFileName(data.fileName);
+        setRootDir(data.rootDir);
       } else {
         setMockList([]);
       }
@@ -77,11 +89,11 @@ export default function App() {
       isServer.current = false;
       console.error('获取缓存数据失败:', error);
     }
-  }, [savePath, saveFileName]);
+  }
 
   // 在组件加载时获取缓存的配置数据
   useEffect(() => {
-    fetchCacheData();
+    fetchCacheData(true);
   }, []);
 
   const addMockerItem = () => {
@@ -199,7 +211,12 @@ export default function App() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ mockList, savePath, saveFileName }),
+          body: JSON.stringify({
+            mockList,
+            dir: savePath,
+            fileName: saveFileName,
+            rootDir,
+          }),
         });
 
         const data = await res.json();
@@ -207,6 +224,7 @@ export default function App() {
           setResponse(JSON.stringify(data, null, 2));
         } else if (data.code === 200) {
           message.open('success', "保存成功");
+          setRootDir(data.rootDir)
         }
       } else {
         if (mockList.length > 0) {
@@ -280,6 +298,20 @@ export default function App() {
             <div className="flex gap-4">
               <div className='flex-1 flex  items-center gap-2'>
                 <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  根目录
+                </label>
+                <input
+                  type="text"
+                  value={rootDir}
+                  onChange={(e) => {
+                    const newPath = e.target.value;
+                    setRootDir(newPath);
+                  }}
+                  className="flex-1 px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                />
+              </div>
+              <div className='flex-1 flex  items-center gap-2'>
+                <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                   目录名
                 </label>
                 <input
@@ -308,17 +340,14 @@ export default function App() {
               </div>
               <button
                 type="button"
-                onClick={fetchCacheData}
+                onClick={() => fetchCacheData(false)}
                 className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors whitespace-nowrap text-xs"
               >
                 查询
               </button>
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-              默认保存到当前工作目录的 mocker 文件夹
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-              工作目录下保存路径: /{savePath || 'mocker'}
+              默认保存到当前工作目录的 mock 文件夹
             </p>
           </div>
           {mockList.length > 0 ? (
