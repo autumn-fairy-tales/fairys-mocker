@@ -34,7 +34,7 @@ class Global extends ProxyInstanceObject<GlobalState> {
 const proxyInstance = new Global()._ctor({
   tabKey: "mock",
   messageList: [],
-  isServer: true
+  isServer: true,
 })
 
 const { MainProxyProvider, useMainProxyStore } = createCommonMainStore<GlobalState, Global>({ proxyInstance, namespace: "global" })
