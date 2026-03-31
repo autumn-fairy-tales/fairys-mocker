@@ -8,10 +8,13 @@
     "----": "============================ui=============================",
     "dev": "npm run-script dev --workspace @fairys/mocker-ui",
     "build": "npm run-script build --workspace @fairys/mocker-ui",
+    "------": "============================create-mock-data=============================",
+    "watch:create": "npm run-script watch --workspace @fairys/create-mock-data",
+    "build:create": "npm run-script build --workspace @fairys/create-mock-data",
     "-------": "============================docs=============================",
     "build:docs": "npm run-script build --workspace docs",
     "docs": "npm run-script dev --workspace docs",
-    "build:all": "npm run build && npm run build:docs",
+    "build:all": "npm run build:create && npm run build && npm run build:docs",
     "version": "lerna version --force-publish=* --no-changelog --no-git-tag-version --no-push",
     "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
   },
@@ -23,7 +26,7 @@
     "mockjs": "^1.1.0",
     "prettier": "~2.7.0",
     "pretty-quick": "~4.2.2",
-    "typescript": "~5.9.2"
+    "typescript": "~6.0.2"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts,less,md,json}": "prettier --write"

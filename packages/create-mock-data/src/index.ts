@@ -1,6 +1,21 @@
+import Mock from "mockjs"
 
-import { type MockerItem } from '../pages';
-import Mock from 'mockjs';
+export interface MockerItem {
+  /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
+  /**状态码*/
+  status: string;
+  //配置响应延迟时间, 如果传入的是一个数组，则代表延迟时间的范围
+  delay: number | [number, number];
+  /**响应体(可以自定义返回格式)*/
+  body: any;
+  /**接口地址*/
+  url: string;
+  /**响应体格式类型*/
+  bodyFormat: 'object' | 'list';
+  /**列表数据条数（仅 list 格式有效）*/
+  listCount: number;
+}
 
 /**
  * 创建 Mock 数据
@@ -18,17 +33,17 @@ export function createMockData(mockList: MockerItem[]) {
       const listCount = item.listCount;
       for (let index = 0; index < objectKeys.length; index++) {
         const key = objectKeys[index];
-        const value = data[key];
-        if (Array.isArray(value)) {
+        const itemConfig = data[key];
+        // 处理数组对象数据
+        if (/^(\_\|)/.test(key)) {
           /**数组的时候，判断字段是否有 个数 字段*/
-          const [_key, count] = key.split('|');
+          const [_, _key, count] = key.split('|');
           const _count = `${count || ''}`.trim();
-          const itemConfig = value?.[0];
           if (itemConfig) {
             saveData[_key] = Array.from({ length: _count ? Number(_count) : listCount }, () => Mock.mock(itemConfig));
           }
         } else {
-          const valueMock = Mock.mock({ [key]: value });
+          const valueMock = Mock.mock({ [key]: itemConfig });
           Object.assign(saveData, valueMock);
         }
       }
@@ -54,4 +69,4 @@ export function createMockData(mockList: MockerItem[]) {
   });
   return processedList;
 }
-
+export default createMockData;

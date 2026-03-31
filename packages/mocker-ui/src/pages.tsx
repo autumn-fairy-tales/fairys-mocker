@@ -1,6 +1,7 @@
 'use client';
+
 import React, { useState, useEffect, useCallback, useRef, Fragment } from 'react';
-import { createMockData } from './utils';
+import { createMockData } from '@fairys/create-mock-data';
 import { svgIcons, type IconType, iconTypeColor } from './assets/icon';
 
 export interface MockerItem {
@@ -55,6 +56,7 @@ export default function App() {
   const [mockList, setMockList] = useState<DefineMockList>([]);
   const [response, setResponse] = useState<string>('');
   const [savePath, setSavePath] = useState<string>('mock');
+  const [saveFileName, setSaveFileName] = useState<string>('index.mock');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [modalBody, setModalBody] = useState<string>('');
@@ -64,13 +66,10 @@ export default function App() {
   // 获取缓存数据的函数
   const fetchCacheData = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/mock?savePath=${encodeURIComponent(savePath)}`);
+      const res = await fetch(`${API_BASE_URL}/api/mock?savePath=${encodeURIComponent(savePath)}&saveFileName=${encodeURIComponent(saveFileName)}`);
       const data = await res.json();
       if (data.code === 200) {
         setMockList(data.data);
-        if (data.savePath) {
-          setSavePath(data.savePath);
-        }
       } else {
         setMockList([]);
       }
@@ -78,7 +77,7 @@ export default function App() {
       isServer.current = false;
       console.error('获取缓存数据失败:', error);
     }
-  }, [savePath]);
+  }, [savePath, saveFileName]);
 
   // 在组件加载时获取缓存的配置数据
   useEffect(() => {
@@ -200,7 +199,7 @@ export default function App() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ mockList, savePath }),
+          body: JSON.stringify({ mockList, savePath, saveFileName }),
         });
 
         const data = await res.json();
@@ -276,18 +275,37 @@ export default function App() {
         <div className="space-y-6 flex-1 flex flex-col box-border  overflow-hidden">
           <div className="mb-6">
             <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-              数据保存到本地目录名
+              数据保存到本地参数
             </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={savePath}
-                onChange={(e) => {
-                  const newPath = e.target.value;
-                  setSavePath(newPath);
-                }}
-                className="flex-1 px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
-              />
+            <div className="flex gap-4">
+              <div className='flex-1 flex  items-center gap-2'>
+                <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  目录名
+                </label>
+                <input
+                  type="text"
+                  value={savePath}
+                  onChange={(e) => {
+                    const newPath = e.target.value;
+                    setSavePath(newPath);
+                  }}
+                  className="flex-1 px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                />
+              </div>
+              <div className='flex-1 flex items-center  gap-2'>
+                <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  文件名
+                </label>
+                <input
+                  type="text"
+                  value={saveFileName}
+                  onChange={(e) => {
+                    const newPath = e.target.value;
+                    setSaveFileName(newPath);
+                  }}
+                  className="flex-1 px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
+                />
+              </div>
               <button
                 type="button"
                 onClick={fetchCacheData}
@@ -390,7 +408,7 @@ export default function App() {
                               updateMockerItem(index, 'body', {
                                 code: 200,
                                 data: {
-                                  rows: [{ id: '@id', name: '@name' }],
+                                  '_|rows': { id: '@id', name: '@name' },
                                   total: '@integer(20, 100)'
                                 },
                                 message: 'success'
@@ -534,12 +552,12 @@ export default function App() {
                         updateMockerItem(currentIndex, 'body', {
                           code: 200,
                           data: {
-                            rows: [{ id: '@id', name: '@name' }],
+                            '_|rows': { id: '@id', name: '@name' },
                             total: '@integer(20, 100)'
                           },
                           message: 'success'
                         });
-                        setModalBody(JSON.stringify({ code: 200, data: { rows: [{ id: '@id', name: '@name' }], total: '@integer(20, 100)' }, message: 'success' }, null, 2));
+                        setModalBody(JSON.stringify({ code: 200, data: { '_|rows': { id: '@id', name: '@name' }, total: '@integer(20, 100)' }, message: 'success' }, null, 2));
                       }
                     }}
                     className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
@@ -575,10 +593,10 @@ export default function App() {
                   />
                 </div>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                 支持使用 <a href="http://mockjs.com/examples.html" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Mock.js 语法</a>，如 @id, @name, @email 等，
-                <span className='text-red-500'>数组为特殊处理，仅支持 (<b>字段|条数</b>)</span>
-              </p>
+                <div className='text-red-500'>数组数据为特殊处理,使用`_|`开头，后面拼接字段：<b>_|字段|条数</b> 或者 <b>_|字段</b></div>
+              </div>
               <div className="flex justify-end space-x-2 mt-3">
                 <button
                   type="button"

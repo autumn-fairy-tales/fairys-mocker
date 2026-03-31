@@ -1,0 +1,42 @@
+{
+  "name": "@fairys/mocker-cli",
+  "version": "0.0.0",
+  "description": "Fairys Mocker CLI for mock data generation",
+  "author": "SunLxy <1011771396@qq.com>",
+  "homepage": "https://github.com/autumn-fairy-tales/fairys-admin-react",
+  "main": "esm/index.js",
+  "types": "esm/index.d.ts",
+  "module": "esm/index.js",
+  "license": "ISC",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/autumn-fairy-tales/fairys-mocker.git",
+    "directory": "packages/mocker-cli"
+  },
+  "scripts": {
+    "start": "node bin/fairys-mocker",
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "bin": {
+    "fairys-mocker": "bin/fairys-mocker"
+  },
+  "dependencies": {
+    "@fairys/create-mock-data": "^0.0.0",
+    "detect-port": "^2.1.0",
+    "express": "^5.2.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6"
+  },
+  "files": [
+    "dist",
+    "index.js"
+  ]
+}

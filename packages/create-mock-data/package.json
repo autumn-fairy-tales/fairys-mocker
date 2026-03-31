@@ -1,0 +1,31 @@
+{
+  "name": "@fairys/create-mock-data",
+  "version": "0.0.0",
+  "description": "Fairys Create Mock Data",
+  "author": "SunLxy <1011771396@qq.com>",
+  "homepage": "https://github.com/autumn-fairy-tales/fairys-admin-react",
+  "main": "esm/index.js",
+  "types": "esm/index.d.ts",
+  "module": "esm/index.js",
+  "license": "ISC",
+  "type": "module",
+  "scripts": {
+    "build": "carefrees-rslib build --node --esm",
+    "watch": "carefrees-rslib build --watch  --node  --esm"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/autumn-fairy-tales/fairys-mocker.git",
+    "directory": "packages/create-mock-data"
+  },
+  "dependencies": {
+    "mockjs": "~1.1.0"
+  },
+  "files": [
+    "src",
+    "esm"
+  ]
+}
