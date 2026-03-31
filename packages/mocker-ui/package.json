@@ -12,7 +12,8 @@
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "@fairys/create-mock-data": "^0.0.0"
+    "@fairys/create-mock-data": "^0.0.0",
+    "@carefrees/valtio": "^0.0.16"
   },
   "devDependencies": {
     "@types/mockjs": "^1.0.10",
