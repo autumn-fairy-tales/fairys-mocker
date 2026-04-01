@@ -1,4 +1,7 @@
 import express from 'express';
+import { mainAppCli } from "../main.js"
+import chalk from 'chalk';
+
 
 export class BaseRouter<T> {
   /**mock 路由器实例*/
@@ -12,17 +15,22 @@ export class BaseRouter<T> {
   };
 
   /**销毁路由器实例*/
-  destroy: () => void = () => {
+  destroy: (msg?: string) => void = (msg) => {
     if (this.router) {
       // 清空路由器实例
       this.router.stack = [];
       this.isEnabled = false;
     }
+    if (msg) {
+      console.log(chalk.red(msg))
+      console.log('')
+    }
   };
 
-  use(mainRouter?: express.Router | null) {
-    if (this.router && mainRouter)
-      mainRouter.use(this.router);
+  useRouter() {
+    if (this.router && mainAppCli.router) {
+      mainAppCli.router.use(this.router);
+    }
   }
 
 }

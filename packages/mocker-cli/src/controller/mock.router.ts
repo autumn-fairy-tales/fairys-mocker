@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'node:fs';
 import nodePath from "node:path"
-import { createMockData, createProxyData } from '@fairys/create-mock-data';
+import { createMockData, } from '@fairys/create-mock-data';
 import { Get, Post, Controller } from "../utils/decorator.js"
 import { utils } from "../utils/index.js"
 import { MockRouter } from "../router/mock.js"
@@ -158,7 +158,7 @@ export default mockList;
         const mockList = cacheData.mockList || cacheData;
 
         this.router?.load(mockList);
-        this.router?.use(this.mainRouter);
+        this.router?.useRouter();
 
         res.json({
           code: 200,
@@ -191,7 +191,7 @@ export default mockList;
   get_mock_destroy(req: express.Request, res: express.Response) {
     try {
       if (this.router?.router) {
-        this.router?.destroy();
+        this.router?.destroy("销毁mock路由器实例");
       } else {
         res.json({
           code: 404,
@@ -210,6 +210,5 @@ export default mockList;
       });
     }
   }
-
 
 }

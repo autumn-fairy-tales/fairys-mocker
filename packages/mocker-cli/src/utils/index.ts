@@ -1,4 +1,5 @@
 
+import chalk from 'chalk';
 import fs from 'node:fs';
 import path from "node:path"
 
@@ -9,6 +10,8 @@ class Utils {
   public dir = 'mock';
   /**文件名*/
   public file = 'index.mock';
+  /**代理文件名*/
+  public proxyFile = 'proxy';
 
   /**设置根目录*/
   setRootDir = (value?: string) => {
@@ -17,7 +20,7 @@ class Utils {
     } else {
       if (value) {
         console.log('')
-        console.log(` \x1B[31m设置的根目录不存在：${value}\x1B[0m`)
+        console.log(chalk.red(`设置的根目录不存在：${value}`))
         console.log('')
       }
       this.rootDir = process.env.FAIRYS_MOCKER_ROOT_DIR || path.join(process.cwd());
@@ -32,6 +35,11 @@ class Utils {
   /**设置文件名*/
   setFile = (value?: string) => {
     this.file = value || process.env.FAIRYS_MOCKER_FILE || 'index.mock';
+  }
+
+  /**设置代理文件名*/
+  setProxyFile = (value?: string) => {
+    this.proxyFile = value || process.env.FAIRYS_MOCKER_PROXY_FILE || 'proxy';
   }
 }
 

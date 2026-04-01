@@ -1,4 +1,4 @@
-import React, { useEffect, } from 'react';
+import React, { Fragment, useEffect, } from 'react';
 import { useProxyStore } from "@carefrees/valtio"
 import { useGlobalProxyStore } from "@/models"
 import { API_BASE_URL } from "@/utils"
@@ -19,6 +19,7 @@ export default function ProxyConfig() {
     isModalOpen: boolean,
     currentIndex: number | null,
     modalBody: string
+    isEnabledStart: boolean
   }>({
     rootDir: "",
     dir: "mock",
@@ -27,7 +28,8 @@ export default function ProxyConfig() {
     response: "",
     isModalOpen: false,
     currentIndex: null,
-    modalBody: ''
+    modalBody: '',
+    isEnabledStart: false
   }, { sync: true })
 
   const proxyList = state.proxyList;
@@ -38,6 +40,58 @@ export default function ProxyConfig() {
   const rootDir = state.rootDir;
   const dir = state.dir;
   const fileName = state.fileName
+  const isEnabledStart = state.isEnabledStart
+
+
+
+  // 检查 Mock 配置服务是否启用
+  const checkProxyEnabled = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/_fairys/_proxy/_is_enabled`).then(res => res.json());
+      if (res.code === 200) {
+        dispatch({ isEnabledStart: res.data })
+        // _globalProxyInstance.open('success', '检查 Mock 配置服务是否启用成功')
+      } else {
+        // _globalProxyInstance.open('error', '检查 Mock 配置服务是否启用失败')
+      }
+    } catch (error) {
+      console.error('检查 Proxy 配置服务是否启用失败:', error);
+    }
+  }
+
+  useEffect(() => {
+    checkProxyEnabled()
+  }, [])
+
+  // 销毁 mock 数据服务的函数
+  const destroyProxyData = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/_fairys/_proxy/_destroy`).then(res => res.json());
+      if (res.code === 200) {
+        dispatch({ isEnabledStart: false })
+        _globalProxyInstance.open('success', '销毁 Proxy 服务成功')
+      } else {
+        _globalProxyInstance.open('error', '销毁 Proxy 服务失败')
+      }
+    } catch (error) {
+      console.error('销毁 Proxy 服务失败:', error);
+    }
+  }
+
+  // 加载 mock 数据服务的函数
+  const loadProxyData = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/_fairys/_proxy/_start`).then(res => res.json());
+      if (res.code === 200) {
+        _globalProxyInstance.open('success', '加载 Proxy 服务成功')
+        dispatch({ isEnabledStart: true })
+      } else {
+        _globalProxyInstance.open('error', '加载 Proxy 服务失败')
+      }
+    } catch (error) {
+      console.error('加载 Proxy 服务失败:', error);
+    }
+  }
 
   // 获取缓存数据的函数
   const fetchCacheData = async () => {
@@ -73,8 +127,8 @@ export default function ProxyConfig() {
     const proxyList = proxyInstance.store.proxyList || []
     dispatch({
       proxyList: [...proxyList].concat([{
-        path: `/api/test${proxyList.length + 1}`,
-        target: 'http://localhost:3000',
+        path: ``,
+        target: '',
       }])
     })
   };
@@ -101,13 +155,13 @@ export default function ProxyConfig() {
       // 校验接口地址
       if (!item.path.trim()) {
         isValid = false;
-        errorMessage = `接口配置 #${i + 1} 的 路径 不能为空`;
+        errorMessage = `代理配置 #${i + 1} 的 接口地址 不能为空`;
         break;
       }
       // 校验接口地址
       if (!item.target.trim()) {
         isValid = false;
-        errorMessage = `接口配置 #${i + 1} 的 目标地址 不能为空`;
+        errorMessage = `代理配置 #${i + 1} 的 目标地址 不能为空`;
         break;
       }
     }
@@ -132,7 +186,7 @@ export default function ProxyConfig() {
       let errorMessage = []
       for (let [key, value] of seenCombinations) {
         if (value.length > 1)
-          errorMessage.push(<div key={key}>第 {value.join(',')} 行数据 路径重复;</div>);
+          errorMessage.push(<div key={key}>第 {value.join(',')} 行数据 接口地址重复;</div>);
       }
       if (errorMessage.length > 0) {
         _globalProxyInstance.open('error', errorMessage, 5000);
@@ -208,12 +262,28 @@ export default function ProxyConfig() {
 
   return (
     <div className="space-y-6 flex-1 flex flex-col box-border  overflow-hidden">
-      <div className="text-center mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border">
-        当前配置总条数: {proxyList.length}
+      <div className="mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border flex justify-between">
+        <div>当前配置总条数: {proxyList.length}</div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={loadProxyData}
+            className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
+          >
+            {isEnabledStart ? "重启" : "启动"} proxy 服务
+          </button>
+          {isEnabledStart ? <button
+            type="button"
+            onClick={destroyProxyData}
+            className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-xs"
+          >
+            销毁 proxy 服务
+          </button> : <Fragment />}
+        </div>
       </div>
       <div className="mb-6">
         <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-          数据保存到本地参数
+          数据保存到本地
         </label>
         <div className="flex gap-4">
           <div className='flex-1 flex  items-center gap-2'>
@@ -287,6 +357,7 @@ export default function ProxyConfig() {
                   return <input
                     type="text"
                     value={item.path}
+                    placeholder="请使用 ^ 开头"
                     onChange={(e) => updateProxyItem(index, 'path', e.target.value)}
                     className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
                   />
@@ -321,6 +392,15 @@ export default function ProxyConfig() {
                     }}
                     className="mr-2"
                   />
+                }
+              },
+              {
+                title: "路径重写数据",
+                dataIndex: "pathRewrite",
+                render(item) {
+                  return <div className="text-zinc-500 dark:text-zinc-400 text-xs w-[250px]">
+                    {JSON.stringify(item.pathRewrite, null, 2)}
+                  </div>
                 }
               },
               {

@@ -126,7 +126,7 @@ export default function MockerConfig() {
     const mockList = proxyInstance.store.mockList || []
     dispatch({
       mockList: [...mockList].concat([{
-        url: `/api/test${mockList.length + 1}`,
+        url: ``,
         method: 'POST',
         status: '200',
         delay: 0,
@@ -308,7 +308,6 @@ export default function MockerConfig() {
       <div className="mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border flex justify-between">
         <div>当前配置总条数: {mockList.length}</div>
         <div className="flex gap-2">
-
           <button
             type="button"
             onClick={loadMockData}
@@ -327,7 +326,7 @@ export default function MockerConfig() {
       </div>
       <div className="mb-6">
         <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-          数据保存到本地参数
+          数据保存到本地
         </label>
         <div className="flex gap-4">
           <div className='flex-1 flex  items-center gap-2'>
@@ -400,6 +399,7 @@ export default function MockerConfig() {
                 render(item, index) {
                   return <input
                     type="text"
+                    placeholder="请输入接口地址"
                     value={item.url}
                     onChange={(e) => updateMockerItem(index, 'url', e.target.value)}
                     className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
@@ -439,7 +439,7 @@ export default function MockerConfig() {
                 },
               },
               {
-                title: "响应延迟时间",
+                title: "响应延迟时间(ms)",
                 dataIndex: "delay",
                 render(item, index) {
                   return <input
@@ -510,6 +510,15 @@ export default function MockerConfig() {
                   ) : (
                     <span className="text-zinc-500 dark:text-zinc-400 text-xs">N/A</span>
                   )
+                }
+              },
+              {
+                title: "响应体数据",
+                dataIndex: "body",
+                render(item) {
+                  return <div className="text-zinc-500 dark:text-zinc-400 text-xs w-[400px]">
+                    {JSON.stringify(item.body, null, 2)}
+                  </div>
                 }
               },
               {

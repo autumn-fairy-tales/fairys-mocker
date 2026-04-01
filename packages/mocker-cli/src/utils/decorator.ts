@@ -1,5 +1,6 @@
 
 import express from 'express';
+import { mainAppCli } from "../main.js"
 
 export type ClassStruct<TInstanceType extends unknown = unknown> = new (
   ...args: any[]
@@ -46,15 +47,14 @@ export function Get(path: string) {
 }
 
 // 注册路由（constructor 调用）
-export function registerRoutes(instance: unknown, app: express.Application, router: express.Router) {
+export function registerRoutes(instance: unknown) {
+  const app = mainAppCli.app;
+  if (!app) {
+    console.log('请先初始化 app');
+    return;
+  }
   // 获取原型数据
   const proto = Object.getPrototypeOf(instance);
-  // 注册 app 实例
-  // @ts-ignore
-  instance.app = app;
-  // 注册路由实例
-  // @ts-ignore
-  instance.mainRouter = router;
   // 获取控制器前缀
   const controllerAPIRootPath = controllerMap.get(proto.constructor);
   /**实例中方法名*/
@@ -64,15 +64,15 @@ export function registerRoutes(instance: unknown, app: express.Application, rout
     /**获取方法名*/
     const controllerMethod = controllerMethods[index];
     /**方法*/
-    const _requestHandle: (req: express.Request, res: express.Response, app: express.Application) => void = proto[controllerMethod];
-    const boundRequestHandle: (req: express.Request, res: express.Response, app: express.Application) => void = _requestHandle.bind(instance);
+    const _requestHandle: (req: express.Request, res: express.Response,) => void = proto[controllerMethod];
+    const boundRequestHandle: (req: express.Request, res: express.Response) => void = _requestHandle.bind(instance);
     /**获取当前方法配置*/
     const routeItem = routesMap.get(_requestHandle);
     if (routeItem) {
       /**拼接前缀*/
       const fullPath = (controllerAPIRootPath?.prefix || '') + routeItem.path;
       /**方法*/
-      app[routeItem.method](fullPath, (req, res) => boundRequestHandle(req, res, app));
+      app[routeItem.method](fullPath, (req, res) => boundRequestHandle(req, res));
     }
   }
 }

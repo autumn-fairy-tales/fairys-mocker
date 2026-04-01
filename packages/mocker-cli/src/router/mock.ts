@@ -1,6 +1,7 @@
 import express from 'express';
 import { MockerItem, createMockItemData } from "@fairys/create-mock-data"
 import { BaseRouter } from "./base.js"
+import chalk from "chalk"
 
 /**mock 路由器实例*/
 export class MockRouter extends BaseRouter<MockerItem> {
@@ -17,7 +18,7 @@ export class MockRouter extends BaseRouter<MockerItem> {
       /**加载mock路由*/
       const method = mockItem.method.toLowerCase() as "all" | "get" | "post" | "put" | "delete" | "patch" | "options" | "head" | "options";
       const handler = (req: express.Request, res: express.Response) => {
-        console.log(`请求: ${method} ${mockItem.url}`)
+        console.log(chalk.blue(`🦄 mock请求:` + '\t' + chalk.yellow(`${method}`) + "\t" + chalk.bold(`${mockItem.url}`)))
         try {
           const mockData = createMockItemData(mockItem);
           res.status(Number(mockData.status) || 200).json(mockData.body);
@@ -28,8 +29,10 @@ export class MockRouter extends BaseRouter<MockerItem> {
           });
         }
       };
-      console.log(`加载: ${method} ${mockItem.url}`)
+      console.log(chalk.green(`🦄 mock加载:` + '\t' + chalk.yellow(`${method}`) + "\t" + chalk.bold(`${mockItem.url}`)))
       router[method](mockItem.url, handler);
     }
+    console.log('')
+    this.useRouter();
   }
 }

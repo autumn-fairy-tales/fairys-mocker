@@ -18,7 +18,7 @@
     "directory": "packages/mocker-cli"
   },
   "scripts": {
-    "start": "node bin/fairys-mocker",
+    "start": "node --trace-deprecation bin/fairys-mocker",
     "build": "carefrees-rslib build --node --esm",
     "watch": "carefrees-rslib build --watch  --node  --esm"
   },
@@ -26,13 +26,14 @@
     "fairys-mocker": "bin/fairys-mocker"
   },
   "dependencies": {
+    "http-proxy-middleware": "^3.0.5",
     "@fairys/create-mock-data": "^0.0.0",
     "detect-port": "^2.1.0",
     "express": "^5.2.1",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "chalk": "^5.6.2"
   },
   "devDependencies": {
-    "@types/express-http-proxy": "^1.6.7",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6"
   },
