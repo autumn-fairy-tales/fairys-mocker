@@ -25,10 +25,6 @@ jobs:
     - run: yarn install
     - run: yarn run build:all
 
-    - name: ui
-      run: |
-          mv ./packages/mocker-ui/dist/ ./packages/mocker-cli/public/ui/
-
     - name: example
       run: |
           mv ./packages/mocker-ui/demo/ ./docs/doc_build/ui/
