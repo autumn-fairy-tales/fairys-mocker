@@ -12,9 +12,9 @@ hero:
     - theme: alt
       text: GitHub
       link: https://github.com/autumn-fairy-tales/fairys-mocker
-    # - theme: alt
-    #   text: 预览
-    #   link: https://autumn-fairy-tales.github.io/fairys-mocker/example
+    - theme: alt
+      text: 页面
+      link: https://autumn-fairy-tales.github.io/fairys-mocker/ui
   image:
     src: /logo.png
     alt: Logo
