@@ -307,7 +307,7 @@ export default function MockerConfig() {
     <div className="space-y-6 flex-1 flex flex-col box-border  overflow-hidden">
       <div className="mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border flex justify-between">
         <div>当前配置总条数: {mockList.length}</div>
-        <div className="flex gap-2">
+        {isServer ? <div className="flex gap-2">
           <button
             type="button"
             onClick={loadMockData}
@@ -322,7 +322,7 @@ export default function MockerConfig() {
           >
             销毁 mock 数据服务
           </button> : <Fragment />}
-        </div>
+        </div> : <Fragment />}
       </div>
       <div className="mb-6">
         <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
