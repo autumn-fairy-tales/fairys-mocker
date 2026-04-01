@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "copy": "mkdir -p ../mocker-cli/public/ui && cp -rf dist/ ../mocker-cli/public/ui",
+    "copy": "mkdir -p ../mocker-cli/public/ui && cp -rf dist/* ../mocker-cli/public/ui/",
     "build:demo": "rsbuild build --config rsbuild.config.demo.ts",
     "build": "rsbuild build && npm run build:demo && npm run copy",
     "dev": "rsbuild dev --open",
