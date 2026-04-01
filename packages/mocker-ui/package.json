@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "copy": "mkdir -p ../mocker-cli/public/ui && cp -rf dist/ $_",
-    "build": "rsbuild build && npm run copy",
+    "build2": "rsbuild build --config rsbuild.config.demo.ts",
+    "build": "rsbuild build && npm run copy && npm run build2",
     "dev": "rsbuild dev --open",
     "preview": "rsbuild preview"
   },

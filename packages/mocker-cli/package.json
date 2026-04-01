@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Fairys Mocker CLI for mock data generation",
   "author": "SunLxy <1011771396@qq.com>",
-  "homepage": "https://github.com/autumn-fairy-tales/fairys-admin-react",
+  "homepage": "https://github.com/autumn-fairy-tales/fairys-mocker",
   "main": "esm/index.js",
   "types": "esm/index.d.ts",
   "module": "esm/index.js",
