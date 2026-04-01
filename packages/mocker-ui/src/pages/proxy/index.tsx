@@ -43,7 +43,7 @@ export default function ProxyConfig() {
   const fetchCacheData = async () => {
     try {
       const params = `dir=${decodeURIComponent(dir)}&fileName=${decodeURIComponent(fileName)}&rootDir=${decodeURIComponent(rootDir)}`
-      const res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_proxy?${params}`);
+      const res = await fetch(`${API_BASE_URL}/_fairys/_proxy?${params}`);
       const data = await res.json();
       if (data.code === 200) {
         let proxyList = data.data
@@ -141,7 +141,7 @@ export default function ProxyConfig() {
     }
     try {
       if (isServer) {
-        const res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_proxy`, {
+        const res = await fetch(`${API_BASE_URL}/_fairys/_proxy`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -5,23 +5,26 @@ import cors from "cors"
 import { detect } from "detect-port"
 import nodePath from "node:path";
 import { fileURLToPath } from "node:url";
-import { MockRouter } from "./router/mock.router.js"
+import { MockRouterController } from "./controller/mock.router.js"
 import { registerRoutes, ClassStruct } from "./utils/decorator.js"
+import { ProxyRouterController } from "./controller/proxy.router.js"
 
 // 转换成 __filename 和 __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = nodePath.dirname(__filename);
 
 class MockerCli {
-
   app: express.Express
   /**类*/
-  controller: ClassStruct[] = [MockRouter];
+  controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
+  /**主路由*/
+  router: express.Router | null = null;
 
   constructor() {
     this.app = express();
     this.app.use(express.json());
     this.app.use(cors());
+    this.router = express.Router();
     // 静态文件服务
     const staticDir = nodePath.join(__dirname, '../public');
     if (fs.existsSync(staticDir)) {
@@ -30,11 +33,9 @@ class MockerCli {
     }
     for (let index = 0; index < this.controller.length; index++) {
       const Controller = this.controller[index];
-      registerRoutes(new Controller(), this.app)
+      registerRoutes(new Controller(), this.app, this.router)
     }
-
-
-
+    this.app.use('/', this.router);
   }
 
   start = () => {

@@ -39,15 +39,43 @@ export default function MockerConfig() {
   const dir = state.dir;
   const fileName = state.fileName
 
+  // 销毁 mock 数据服务的函数
+  const destroyMockData = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/_fairys/_mock/_destroy`).then(res => res.json());
+      if (res.code === 200) {
+        _globalProxyInstance.open('success', '销毁 Mock 数据服务成功')
+      } else {
+        _globalProxyInstance.open('error', '销毁 Mock 数据服务失败')
+      }
+    } catch (error) {
+      console.error('销毁 mock 数据服务失败:', error);
+    }
+  }
+
+  // 加载 mock 数据服务的函数
+  const loadMockData = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/_fairys/_mock/_start`).then(res => res.json());
+      if (res.code === 200) {
+        _globalProxyInstance.open('success', '加载 Mock 数据服务成功')
+      } else {
+        _globalProxyInstance.open('error', '加载 Mock 数据服务失败')
+      }
+    } catch (error) {
+      console.error('加载 mock 数据服务失败:', error);
+    }
+  }
+
   // 获取缓存数据的函数
   const fetchCacheData = async (isUseEffect?: boolean) => {
     try {
       let res
       if (isUseEffect === true) {
-        res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_mock`);
+        res = await fetch(`${API_BASE_URL}/_fairys/_mock`);
       } else {
         const params = `dir=${decodeURIComponent(dir)}&fileName=${decodeURIComponent(fileName)}&rootDir=${decodeURIComponent(rootDir)}`
-        res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_mock?${params}`);
+        res = await fetch(`${API_BASE_URL}/_fairys/_mock?${params}`);
       }
       const data = await res.json();
       if (data.code === 200) {
@@ -185,7 +213,7 @@ export default function MockerConfig() {
     }
     try {
       if (isServer) {
-        const res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_mock`, {
+        const res = await fetch(`${API_BASE_URL}/_fairys/_mock`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -253,8 +281,24 @@ export default function MockerConfig() {
 
   return (
     <div className="space-y-6 flex-1 flex flex-col box-border  overflow-hidden">
-      <div className="text-center mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border">
-        当前配置总条数: {mockList.length}
+      <div className="mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border flex justify-between">
+        <div>当前配置总条数: {mockList.length}</div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={loadMockData}
+            className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
+          >
+            加载 mock 数据服务
+          </button>
+          <button
+            type="button"
+            onClick={destroyMockData}
+            className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-xs"
+          >
+            销毁 mock 数据服务
+          </button>
+        </div>
       </div>
       <div className="mb-6">
         <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
