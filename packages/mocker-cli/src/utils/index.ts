@@ -1,5 +1,6 @@
 
 import fs from 'node:fs';
+import path from "node:path"
 
 class Utils {
   /**根目录*/
@@ -19,7 +20,7 @@ class Utils {
         console.log(` \x1B[31m设置的根目录不存在：${value}\x1B[0m`)
         console.log('')
       }
-      this.rootDir = process.env.FAIRYS_MOCKER_ROOT_DIR || process.cwd();
+      this.rootDir = process.env.FAIRYS_MOCKER_ROOT_DIR || path.join(process.cwd());
     }
   }
 

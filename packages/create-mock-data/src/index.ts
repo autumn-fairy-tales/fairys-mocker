@@ -16,7 +16,7 @@ export interface MockerItem {
   /**列表数据条数（仅 list 格式有效）*/
   listCount: number;
 }
-
+export type DefineMockList = MockerItem[];
 /**
  * 创建 Mock 数据
 */
@@ -70,3 +70,27 @@ export function createMockData(mockList: MockerItem[]) {
   return processedList;
 }
 export default createMockData;
+
+/**
+ * 代理配置参数
+ */
+export type ProxyItem = {
+  /**代理路径*/
+  path: string,
+  /**转发地址*/
+  target: string,
+  /**路径重写*/
+  pathRewrite?: Record<string, string>,
+  /**是否开启ws*/
+  ws?: boolean
+}
+
+export type ProxyList = ProxyItem[];
+
+/**创建代理数据*/
+export const createProxyData = (proxyList: ProxyList) => {
+  return proxyList.reduce((pre, next) => {
+    const { path, ..._item } = { ...next }
+    return { ...pre, [path]: _item }
+  }, {} as Record<string, Omit<ProxyItem, 'path'>>)
+}

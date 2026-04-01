@@ -1,9 +1,8 @@
 import React, { useEffect, } from 'react';
-import { createMockData } from '@fairys/create-mock-data';
+import { createMockData, type MockerItem, type DefineMockList } from '@fairys/create-mock-data';
 import { useProxyStore } from "@carefrees/valtio"
 import { useGlobalProxyStore } from "@/models"
 import { API_BASE_URL } from "@/utils"
-import type { MockerItem, DefineMockList } from "@/interface"
 import { Table } from '@/components/table';
 
 export default function MockerConfig() {
@@ -45,10 +44,10 @@ export default function MockerConfig() {
     try {
       let res
       if (isUseEffect === true) {
-        res = await fetch(`${API_BASE_URL}/api/mock`);
+        res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_mock`);
       } else {
         const params = `dir=${decodeURIComponent(dir)}&fileName=${decodeURIComponent(fileName)}&rootDir=${decodeURIComponent(rootDir)}`
-        res = await fetch(`${API_BASE_URL}/api/mock?${params}`);
+        res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_mock?${params}`);
       }
       const data = await res.json();
       if (data.code === 200) {
@@ -186,7 +185,7 @@ export default function MockerConfig() {
     }
     try {
       if (isServer) {
-        const res = await fetch(`${API_BASE_URL}/api/mock`, {
+        const res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_mock`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

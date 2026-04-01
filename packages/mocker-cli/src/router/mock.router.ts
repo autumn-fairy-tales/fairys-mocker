@@ -1,27 +1,27 @@
 import express from 'express';
 import fs from 'node:fs';
 import nodePath from "node:path"
-import createMockData from '@fairys/create-mock-data';
+import { createMockData, createProxyData } from '@fairys/create-mock-data';
 import { Get, Post, Controller } from "../utils/decorator.js"
 import { utils } from "../utils/index.js"
 
 /**路由*/
-@Controller('/api')
+@Controller('/_fairys/_mocker')
 export class MockRouter {
-  @Post('/mock')
+  @Post('/_mock')
   post_mock(req: express.Request, res: express.Response) {
     // 定义接口
     try {
       const { mockList, dir, fileName = 'index.mock', rootDir } = req.body;
-      let _rootDir = rootDir ?? utils.rootDir;
+      let _rootDir = rootDir || utils.rootDir;
       if (rootDir && !fs.existsSync(rootDir)) {
         _rootDir = utils.rootDir;
       }
 
       const processedList = createMockData(mockList)
       // 存储到本地文件
-      const safeSavePath = dir.trim() ?? 'mock';
-      const safeSaveFileName = fileName.trim() ?? 'index.mock';
+      const safeSavePath = dir.trim() || 'mock';
+      const safeSaveFileName = fileName.trim() || 'index.mock';
       const mockerDir = nodePath.join(_rootDir, safeSavePath);
       if (!fs.existsSync(mockerDir)) {
         fs.mkdirSync(mockerDir, { recursive: true });
@@ -68,6 +68,7 @@ export default mockList;
         code: 200,
         message: 'Mock 配置保存成功',
         data: processedList,
+        mockList: mockList,
         rootDir: utils.rootDir,
         dir: safeSavePath,
         cache: safeSaveFileName + '.cache.json',
@@ -82,12 +83,12 @@ export default mockList;
     }
   }
 
-  @Get('/mock')
+  @Get('/_mock')
   get_mock(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query.dir as string)?.trim() ?? utils.dir;
-      const saveFileName = (req.query.fileName as string)?.trim() ?? utils.file;
-      const rootDir = (req.query.rootDir as string)?.trim() ?? utils.rootDir;
+      const savePath = (req.query.dir as string)?.trim() || utils.dir;
+      const saveFileName = (req.query.fileName as string)?.trim() || utils.file;
+      const rootDir = (req.query.rootDir as string)?.trim() || utils.rootDir;
 
       // 读取 .cache.json 文件
       const mockerDir = nodePath.join(rootDir, savePath);
@@ -120,22 +121,25 @@ export default mockList;
     }
   }
 
-  @Post('/proxy')
+  @Post('/_proxy')
   post_proxy(req: express.Request, res: express.Response) {
     try {
       const { proxyList, dir, fileName = 'proxy', rootDir } = req.body;
-      let _rootDir = rootDir ?? utils.rootDir;
+      let _rootDir = rootDir || utils.rootDir;
       if (rootDir && !fs.existsSync(rootDir)) {
         _rootDir = utils.rootDir;
       }
 
       // 存储到本地文件
-      const safeSavePath = dir.trim() ?? 'mock';
-      const safeSaveFileName = fileName.trim() ?? 'proxy';
+      const safeSavePath = dir.trim() || 'mock';
+      const safeSaveFileName = fileName.trim() || 'proxy';
       const mockerDir = nodePath.join(_rootDir, safeSavePath);
       if (!fs.existsSync(mockerDir)) {
         fs.mkdirSync(mockerDir, { recursive: true });
       }
+
+      const proxyConfig = createProxyData(proxyList)
+
       const proxyFilePath = nodePath.join(mockerDir, `${safeSaveFileName}.ts`);
       const proxyFileContent = `// 代理配置文件
 // 自动生成于 ${new Date().toISOString()}
@@ -143,7 +147,7 @@ export default mockList;
 /**
  * 代理配置参数
  */
-export type ProxyItem = Record<string, string | {
+export type ProxyItem = Record<string,{
   /**转发地址*/
   target: string,
   /**路径重写*/
@@ -152,15 +156,15 @@ export type ProxyItem = Record<string, string | {
   ws?: boolean
 }> 
 
-export const proxyList: ProxyItem = ${JSON.stringify(proxyList, null, 2)};
-export default proxyList;
+export const proxyConfig: ProxyItem = ${JSON.stringify(proxyConfig, null, 2)};
+export default proxyConfig;
     `;
       fs.writeFileSync(proxyFilePath, proxyFileContent);
       // 存储原始的 proxyConfig 到 .cache.json 文件
       const cacheFilePath = nodePath.join(mockerDir, safeSaveFileName + '.cache.json');
       const cacheFileContent = JSON.stringify({
         proxyList,
-        rootDir: utils.rootDir,
+        rootDir: _rootDir,
         dir: safeSavePath,
         fileName: safeSaveFileName,
         cache: safeSaveFileName + '.cache.json',
@@ -169,8 +173,9 @@ export default proxyList;
       res.json({
         code: 200,
         message: '代理配置保存成功',
-        data: proxyList,
-        rootDir: utils.rootDir,
+        data: proxyConfig,
+        proxyList: proxyList,
+        rootDir: _rootDir,
         dir: safeSavePath,
         cache: safeSaveFileName + '.cache.json',
         fileName: safeSaveFileName,
@@ -184,12 +189,12 @@ export default proxyList;
     }
   }
 
-  @Get('/proxy')
+  @Get('/_proxy')
   get_proxy(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query.dir as string)?.trim() ?? utils.dir;
-      const saveFileName = (req.query.fileName as string)?.trim() ?? 'proxy';
-      const rootDir = (req.query.rootDir as string)?.trim() ?? utils.rootDir;
+      const savePath = (req.query.dir as string)?.trim() || utils.dir;
+      const saveFileName = (req.query.fileName as string)?.trim() || 'proxy';
+      const rootDir = (req.query.rootDir as string)?.trim() || utils.rootDir;
 
       // 读取 .cache.json 文件
       const mockerDir = nodePath.join(rootDir, savePath);

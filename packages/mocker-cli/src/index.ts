@@ -32,6 +32,9 @@ class MockerCli {
       const Controller = this.controller[index];
       registerRoutes(new Controller(), this.app)
     }
+
+
+
   }
 
   start = () => {

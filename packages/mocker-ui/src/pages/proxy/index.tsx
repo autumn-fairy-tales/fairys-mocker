@@ -2,8 +2,8 @@ import React, { useEffect, } from 'react';
 import { useProxyStore } from "@carefrees/valtio"
 import { useGlobalProxyStore } from "@/models"
 import { API_BASE_URL } from "@/utils"
-import type { ProxyItem, ProxyList } from "@/interface"
 import { Table } from '@/components/table';
+import { createProxyData, type ProxyItem, type ProxyList } from '@fairys/create-mock-data';
 
 export default function ProxyConfig() {
 
@@ -43,7 +43,7 @@ export default function ProxyConfig() {
   const fetchCacheData = async () => {
     try {
       const params = `dir=${decodeURIComponent(dir)}&fileName=${decodeURIComponent(fileName)}&rootDir=${decodeURIComponent(rootDir)}`
-      const res = await fetch(`${API_BASE_URL}/api/proxy?${params}`);
+      const res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_proxy?${params}`);
       const data = await res.json();
       if (data.code === 200) {
         let proxyList = data.data
@@ -141,7 +141,7 @@ export default function ProxyConfig() {
     }
     try {
       if (isServer) {
-        const res = await fetch(`${API_BASE_URL}/api/proxy`, {
+        const res = await fetch(`${API_BASE_URL}/_fairys/_mocker/_proxy`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -162,7 +162,8 @@ export default function ProxyConfig() {
         dispatch({ rootDir: data.rootDir })
       } else {
         if (proxyList.length > 0) {
-          dispatch({ response: JSON.stringify(proxyList, null, 2) })
+          const proxyData = createProxyData(proxyList as any[]);
+          dispatch({ response: JSON.stringify(proxyData, null, 2) })
         } else {
           _globalProxyInstance.open('success', "操作成功");
         }
