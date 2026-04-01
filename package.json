@@ -10,7 +10,6 @@
     "----": "============================ui=============================",
     "start:ui": "npm run-script dev --workspace @fairys/mocker-ui",
     "build:ui": "npm run-script build --workspace @fairys/mocker-ui",
-    "build:ui2": "npm run-script build2 --workspace @fairys/mocker-ui",
     "------": "============================create-mock-data=============================",
     "watch:create": "npm run-script watch --workspace @fairys/create-mock-data",
     "build:create": "npm run-script build --workspace @fairys/create-mock-data",
@@ -18,7 +17,6 @@
     "build:docs": "npm run-script build --workspace docs",
     "docs": "npm run-script dev --workspace docs",
     "build:all": "npm run build:create && npm run build:cli && npm run build:ui && npm run build:docs",
-    "build:all2": "npm run build:create && npm run build:cli && npm run build:ui2 && npm run build:docs",
     "version": "lerna version --force-publish=* --no-changelog --no-git-tag-version --no-push",
     "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
   },
