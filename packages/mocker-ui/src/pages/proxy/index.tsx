@@ -456,7 +456,7 @@ export default function ProxyConfig() {
           <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-lg shadow-xl p-4 flex flex-col w-full max-w-2xl max-h-[80%]">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
-                mock 数据
+                proxy 数据
               </h2>
               <div className="flex gap-4">
                 <button
