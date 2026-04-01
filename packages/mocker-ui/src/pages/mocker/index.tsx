@@ -1,4 +1,4 @@
-import React, { useEffect, } from 'react';
+import React, { Fragment, useEffect, } from 'react';
 import { createMockData, type MockerItem, type DefineMockList } from '@fairys/create-mock-data';
 import { useProxyStore } from "@carefrees/valtio"
 import { useGlobalProxyStore } from "@/models"
@@ -18,7 +18,8 @@ export default function MockerConfig() {
     response: string,
     isModalOpen: boolean,
     currentIndex: number | null,
-    modalBody: string
+    modalBody: string,
+    isEnabledStart: boolean
   }>({
     rootDir: "",
     dir: "mock",
@@ -27,7 +28,8 @@ export default function MockerConfig() {
     response: "",
     isModalOpen: false,
     currentIndex: null,
-    modalBody: ''
+    modalBody: '',
+    isEnabledStart: false
   }, { sync: true })
 
   const mockList = state.mockList;
@@ -38,12 +40,33 @@ export default function MockerConfig() {
   const rootDir = state.rootDir;
   const dir = state.dir;
   const fileName = state.fileName
+  const isEnabledStart = state.isEnabledStart
+
+  // 检查 Mock 配置服务是否启用
+  const checkMockEnabled = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/_fairys/_mock/_is_enabled`).then(res => res.json());
+      if (res.code === 200) {
+        dispatch({ isEnabledStart: res.data })
+        // _globalProxyInstance.open('success', '检查 Mock 配置服务是否启用成功')
+      } else {
+        // _globalProxyInstance.open('error', '检查 Mock 配置服务是否启用失败')
+      }
+    } catch (error) {
+      console.error('检查 mock 配置服务是否启用失败:', error);
+    }
+  }
+
+  useEffect(() => {
+    checkMockEnabled()
+  }, [])
 
   // 销毁 mock 数据服务的函数
   const destroyMockData = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/_fairys/_mock/_destroy`).then(res => res.json());
       if (res.code === 200) {
+        dispatch({ isEnabledStart: false })
         _globalProxyInstance.open('success', '销毁 Mock 数据服务成功')
       } else {
         _globalProxyInstance.open('error', '销毁 Mock 数据服务失败')
@@ -59,6 +82,7 @@ export default function MockerConfig() {
       const res = await fetch(`${API_BASE_URL}/_fairys/_mock/_start`).then(res => res.json());
       if (res.code === 200) {
         _globalProxyInstance.open('success', '加载 Mock 数据服务成功')
+        dispatch({ isEnabledStart: true })
       } else {
         _globalProxyInstance.open('error', '加载 Mock 数据服务失败')
       }
@@ -284,20 +308,21 @@ export default function MockerConfig() {
       <div className="mb-6 text-xs text-zinc-600 dark:text-zinc-300 box-border flex justify-between">
         <div>当前配置总条数: {mockList.length}</div>
         <div className="flex gap-2">
+
           <button
             type="button"
             onClick={loadMockData}
             className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs"
           >
-            加载 mock 数据服务
+            {isEnabledStart ? "重启" : "启动"} mock 数据服务
           </button>
-          <button
+          {isEnabledStart ? <button
             type="button"
             onClick={destroyMockData}
             className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-xs"
           >
             销毁 mock 数据服务
-          </button>
+          </button> : <Fragment />}
         </div>
       </div>
       <div className="mb-6">

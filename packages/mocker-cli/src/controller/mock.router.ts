@@ -132,6 +132,16 @@ export default mockList;
     }
   }
 
+  /**检查 Mock 配置服务是否启用*/
+  @Get('/_mock/_is_enabled')
+  get_mock_enabled(req: express.Request, res: express.Response) {
+    res.json({
+      code: 200,
+      message: 'Mock 配置服务是否启用',
+      data: this.router?.isEnabled,
+    });
+  }
+
   /**启动 Mock 配置服务*/
   @Get('/_mock/_start')
   get_mock_start(req: express.Request, res: express.Response) {
@@ -158,6 +168,7 @@ export default mockList;
           dir: savePath,
           cache: saveFileName + '.cache.json',
           fileName: saveFileName,
+          isEnabled: true,
         });
 
       } else {
@@ -199,4 +210,6 @@ export default mockList;
       });
     }
   }
+
+
 }

@@ -4,15 +4,13 @@ import { BaseRouter } from "./base.js"
 
 /**mock 路由器实例*/
 export class MockRouter extends BaseRouter<MockerItem> {
-  /**mock 路由器实例*/
-  router: express.Router | null = null;
-
   /**加载mock路由*/
   load = (mockList: MockerItem[]) => {
     /**销毁路由器实例*/
     this.destroy();
     /**创建路由器实例*/
     const router = this.router = express.Router();
+    this.isEnabled = true;
     /**加载mock路由*/
     for (let index = 0; index < mockList.length; index++) {
       const mockItem = mockList[index];
