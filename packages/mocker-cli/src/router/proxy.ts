@@ -19,7 +19,23 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
     this.isEnabled = true;
     for (let index = 0; index < proxyList.length; index++) {
       const proxyItem = proxyList[index];
-      console.log(chalk.hex('#AF52DE')(chalk.bold(`🍇 proxy代理启动:\t${proxyItem.path} ===> ${proxyItem.target}\t`)))
+
+      let protocol = 'http';
+      let _target = proxyItem.target
+
+      if (/^(http:|https:|ws:|wss:)/.test(proxyItem.target)) {
+        const [_protocol] = proxyItem.target.split(":")
+        protocol = _protocol;
+      }
+
+      if ((protocol !== 'ws' && protocol !== 'wss') && proxyItem.ws) {
+        protocol = 'ws'
+        const [_protocol, ...rest] = proxyItem.target.split(":")
+        _target = [protocol, ...rest].join(":")
+      }
+
+      console.log(chalk.hex('#AF52DE')(chalk.bold(`🍇 proxy代理启动:\t${chalk.yellow(protocol)}\t${proxyItem.path} ===> ${_target}\t`)))
+
       // 判断是否 ^ 开头
       if (!proxyItem.path.startsWith('^')) {
         proxyItem.path = '^' + proxyItem.path;
