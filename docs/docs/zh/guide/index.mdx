@@ -1,1 +1,177 @@
 # 介绍
+
+fairys-mocker 是一个功能强大的 mock 数据生成和代理转发工具，帮助开发者快速搭建本地开发环境，模拟 API 响应，提高开发效率。
+
+## 核心功能
+
+### 1. Mock 数据生成
+- 支持 Mock.js 语法生成模拟数据
+- 可配置请求方法、状态码、延迟时间
+- 支持对象和列表两种响应体格式
+- 可自定义列表数据条数
+- 支持响应体的自定义编辑
+
+### 2. 代理转发
+- 支持 HTTP 请求代理
+- 支持 WebSocket 代理
+- 支持路径重写
+- 可配置多个代理规则
+
+### 3. Web 界面管理
+- 可视化配置 mock 数据
+- 可视化配置代理规则
+- 支持配置的保存和加载
+- 支持配置的导出和导入
+
+### 4. RESTful API
+- 提供完整的 API 接口管理 mock 和代理服务
+- 支持服务的启动和销毁
+- 支持配置的读取和保存
+
+## 安装
+
+### 全局安装
+
+```bash
+npm install -g @fairys/mocker-cli
+```
+
+### 本地安装
+
+```bash
+npm install @fairys/mocker-cli --save-dev
+```
+
+## 使用方式
+
+### 1. 启动服务
+
+```bash
+# 全局安装
+fairys-mocker
+
+# 本地安装
+npx fairys-mocker
+```
+
+服务启动后，会在终端显示 API 地址和 UI 地址：
+
+```
+API地址:    http://localhost:6901
+UI地址:     http://localhost:6901/ui
+```
+
+### 2. 使用 Web 界面
+
+1. 访问 UI 地址（默认为 http://localhost:6901/ui）
+2. 在 "Mocker 数据配置" 页面配置 mock 数据
+3. 在 "代理配置" 页面配置代理规则
+4. 点击 "启动服务" 按钮启用 mock 服务
+5. 点击 "启动代理" 按钮启用代理服务
+
+### 3. 使用 API 接口
+
+#### 保存 Mock 配置
+
+```bash
+POST /_fairys/_mock
+
+请求体：
+{
+  "mockList": [
+    {
+      "url": "/api/test",
+      "method": "GET",
+      "status": "200",
+      "delay": 0,
+      "body": {
+        "code": 200,
+        "data": {
+          "id": "@id",
+          "name": "@name"
+        },
+        "message": "success"
+      },
+      "bodyFormat": "object",
+      "listCount": 20
+    }
+  ],
+  "dir": "mock",
+  "fileName": "index.mock"
+}
+```
+
+#### 启动 Mock 服务
+
+```bash
+GET /_fairys/_mock/_start?dir=mock&fileName=index.mock
+```
+
+#### 启动代理服务
+
+```bash
+GET /_fairys/_proxy/_start?dir=mock&fileName=proxy
+```
+
+## 配置说明
+
+### Mock 配置
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| url | string | 接口地址 |
+| method | string | 请求方法（GET、POST、PUT、DELETE、PATCH、HEAD、OPTIONS） |
+| status | string | 状态码 |
+| delay | number/array | 响应延迟时间，数组表示范围 |
+| body | any | 响应体，支持 Mock.js 语法 |
+| bodyFormat | string | 响应体格式（object 或 list） |
+| listCount | number | 列表数据条数（仅 list 格式有效） |
+
+### 代理配置
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| path | string | 代理路径 |
+| target | string | 目标地址 |
+| pathRewrite | object | 路径重写规则 |
+| ws | boolean | 是否启用 WebSocket 代理 |
+
+## 常见问题
+
+### 1. 服务启动失败
+
+- 检查端口是否被占用
+- 检查依赖是否安装完整
+- 检查配置文件是否正确
+
+### 2. Mock 数据不生效
+
+- 检查请求方法是否匹配
+- 检查接口地址是否正确
+- 检查 Mock 服务是否已启动
+
+### 3. 代理服务不生效
+
+- 检查代理配置是否正确
+- 检查目标地址是否可达
+- 检查代理服务是否已启动
+
+### 4. 启动顺序问题
+
+推荐先启动 Mock 服务，再启动代理服务，这样可以确保 Mock 配置的接口优先被处理，未匹配到的接口再通过代理转发。
+
+## 技术栈
+
+- Node.js + Express
+- React + TypeScript
+- Mock.js
+- http-proxy-middleware
+- rspress (文档)
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request 来改进这个项目！
+
+## 许可证
+
+MIT License
