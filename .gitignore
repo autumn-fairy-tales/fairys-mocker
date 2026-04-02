@@ -6,4 +6,4 @@ lib
 esm
 dist
 mock
-mocker-ui/demo
+packages/mocker-ui/demo

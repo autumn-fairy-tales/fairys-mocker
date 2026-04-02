@@ -9,6 +9,7 @@ import { MockRouterController } from "./controller/mock.router.js"
 import { registerRoutes, ClassStruct } from "./utils/decorator.js"
 import { ProxyRouterController } from "./controller/proxy.router.js"
 import chalk from "chalk"
+import * as http from "http";
 
 // 转换成 __filename 和 __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +18,8 @@ const __dirname = nodePath.dirname(__filename);
 export class MainAppCli {
   /**应用实例*/
   app: express.Express | null = null
+  /**服务*/
+  server: http.Server | undefined = undefined
   /**类*/
   controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
   /**主路由*/
@@ -48,9 +51,10 @@ export class MainAppCli {
     const app = this.app
     /**启动服务器*/
     const PORT = process.env.PORT || 6901;
+    const _that = this;
     detect(PORT)
       .then(realPort => {
-        app.listen(realPort, () => {
+        _that.server = app.listen(realPort, () => {
           console.log("")
           console.log(chalk.green(`\tAPI地址:    http://localhost:${realPort}`));
           console.log(chalk.green(`\tUI地址:     http://localhost:${realPort}/ui`));
