@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { fairysMockerBase } from "../base.js"
+import { fairysMockerBase } from "../app/base.js"
 
 export type ClassStruct<TInstanceType extends unknown = unknown> = new (
   ...args: any[]

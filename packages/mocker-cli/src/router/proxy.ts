@@ -3,7 +3,7 @@ import { ProxyItem } from "@fairys/create-mock-data"
 import { BaseRouter } from "./base.js"
 import { createProxyMiddleware, RequestHandler } from "http-proxy-middleware"
 import chalk from "chalk"
-import { fairysMockerBase } from "../base.js"
+import { fairysMockerBase } from "../app/base.js"
 
 /**代理 路由器实例*/
 export class ProxyRouter extends BaseRouter<ProxyItem> {

@@ -5,9 +5,9 @@ import fs from 'node:fs';
 import cors from "cors"
 import nodePath from "node:path";
 import { fileURLToPath } from "node:url";
-import { MockRouterController } from "./controller/mock.router.js"
-import { ClassStruct, registerRoutes } from "./utils/decorator.js"
-import { ProxyRouterController } from "./controller/proxy.router.js"
+import { MockRouterController } from "../controller/mock.router.js"
+import { ClassStruct, registerRoutes } from "../utils/decorator.js"
+import { ProxyRouterController } from "../controller/proxy.router.js"
 import chalk from "chalk"
 import http from "node:http";
 
