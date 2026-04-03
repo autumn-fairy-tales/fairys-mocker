@@ -7,4 +7,4 @@ esm
 dist
 mock
 packages/mocker-ui/demo
-packages/mocker-cli/public/ui
+packages/mocker-cli/public/ui/*

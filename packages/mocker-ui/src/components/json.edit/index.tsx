@@ -19,7 +19,7 @@ export const JSONEdit = (props: JSONEditProps) => {
     className={className}
     style={{
       fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-      minHeight: 200,
+      minHeight: 280,
     }}
   />
 }
