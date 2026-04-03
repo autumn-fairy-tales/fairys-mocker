@@ -73,7 +73,7 @@ export default function ProxyConfig() {
         dispatch({ isEnabledStart: false })
         _globalProxyInstance.open('success', '销毁 Proxy 服务成功')
       } else {
-        _globalProxyInstance.open('error', '销毁 Proxy 服务失败')
+        _globalProxyInstance.open('error', res.message || '销毁 Proxy 服务失败')
       }
     } catch (error) {
       console.error('销毁 Proxy 服务失败:', error);
@@ -88,7 +88,7 @@ export default function ProxyConfig() {
         _globalProxyInstance.open('success', '加载 Proxy 服务成功')
         dispatch({ isEnabledStart: true })
       } else {
-        _globalProxyInstance.open('error', '加载 Proxy 服务失败')
+        _globalProxyInstance.open('error', res.message || '加载 Proxy 服务失败')
       }
     } catch (error) {
       console.error('加载 Proxy 服务失败:', error);

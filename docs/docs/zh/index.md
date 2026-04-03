@@ -14,7 +14,7 @@ hero:
       link: https://github.com/autumn-fairy-tales/fairys-mocker
     - theme: alt
       text: 页面
-      link: https://autumn-fairy-tales.github.io/fairys-mocker/ui
+      link: https://autumn-fairy-tales.github.io/fairys-mocker/_fairys_mocker
   image:
     src: /logo.png
     alt: Logo

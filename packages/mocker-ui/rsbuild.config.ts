@@ -5,10 +5,10 @@ import tailwindcss from '@tailwindcss/postcss';
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
   output: {
-    assetPrefix: '/ui/',
+    assetPrefix: '/_fairys_mocker/',
   },
   server: {
-    base: '/ui/',
+    base: '/_fairys_mocker/',
   },
   html: {
     title: 'Fairys Mocker',

@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { mainAppCli } from "../main.js"
+import { fairysMockerBase } from "../base.js"
 
 export type ClassStruct<TInstanceType extends unknown = unknown> = new (
   ...args: any[]
@@ -48,9 +48,9 @@ export function Get(path: string) {
 
 // 注册路由（constructor 调用）
 export function registerRoutes(instance: unknown) {
-  const app = mainAppCli.app;
+  const app = fairysMockerBase.app;
   if (!app) {
-    console.log('请先初始化 app');
+    console.log('请先初始化主 app');
     return;
   }
   // 获取原型数据

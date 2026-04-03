@@ -6,11 +6,11 @@ import tailwindcss from '@tailwindcss/postcss';
 export default defineConfig({
 
   output: {
-    distPath: "demo",
-    assetPrefix: '/fairys-mocker/ui/',
+    distPath: "_fairys_mocker",
+    assetPrefix: '/fairys-mocker/_fairys_mocker/',
   },
   server: {
-    base: '/fairys-mocker/ui/',
+    base: '/fairys-mocker/_fairys_mocker/',
   },
   html: {
     title: 'Fairys Mocker',

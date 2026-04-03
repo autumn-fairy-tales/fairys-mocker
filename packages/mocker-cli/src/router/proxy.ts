@@ -3,7 +3,7 @@ import { ProxyItem } from "@fairys/create-mock-data"
 import { BaseRouter } from "./base.js"
 import { createProxyMiddleware, RequestHandler } from "http-proxy-middleware"
 import chalk from "chalk"
-import { mainAppCli } from "../main.js"
+import { fairysMockerBase } from "../base.js"
 
 /**代理 路由器实例*/
 export class ProxyRouter extends BaseRouter<ProxyItem> {
@@ -49,9 +49,9 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
         })
         _that.wsProxyList.push(wsProxy)
         router.use(proxyItem.path, wsProxy)
-        if (mainAppCli.server) {
+        if (fairysMockerBase.server) {
           // 升级 WebSocket 处理
-          mainAppCli.server?.on('upgrade', wsProxy.upgrade)
+          fairysMockerBase.server?.on('upgrade', wsProxy.upgrade)
         }
       } else {
         router.use(proxyItem.path, createProxyMiddleware({
@@ -75,10 +75,10 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
     }
     /** http 升级 WebSocket 的 upgrade 销毁*/
     const wsProxyList = this.wsProxyList
-    if (Array.isArray(wsProxyList) && wsProxyList.length && mainAppCli.server) {
+    if (Array.isArray(wsProxyList) && wsProxyList.length && fairysMockerBase.server) {
       for (let index = 0; index < wsProxyList.length; index++) {
         const wsProxy = wsProxyList[index];
-        mainAppCli.server.off('upgrade', wsProxy.upgrade)
+        fairysMockerBase.server.off('upgrade', wsProxy.upgrade)
       }
     }
     if (msg) {

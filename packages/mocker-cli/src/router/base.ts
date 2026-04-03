@@ -1,5 +1,5 @@
 import express from 'express';
-import { mainAppCli } from "../main.js"
+import { fairysMockerBase } from "../base.js"
 import chalk from 'chalk';
 
 
@@ -28,8 +28,8 @@ export class BaseRouter<T> {
   };
 
   useRouter() {
-    if (this.router && mainAppCli.router) {
-      mainAppCli.router.use(this.router);
+    if (this.router && fairysMockerBase.router) {
+      fairysMockerBase.router.use(this.router);
     }
   }
 

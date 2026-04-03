@@ -71,7 +71,7 @@ export default function MockerConfig() {
         dispatch({ isEnabledStart: false })
         _globalProxyInstance.open('success', '销毁 Mock 数据服务成功')
       } else {
-        _globalProxyInstance.open('error', '销毁 Mock 数据服务失败')
+        _globalProxyInstance.open('error', res.message || '销毁 Mock 数据服务失败')
       }
     } catch (error) {
       console.error('销毁 mock 数据服务失败:', error);
@@ -86,7 +86,7 @@ export default function MockerConfig() {
         _globalProxyInstance.open('success', '加载 Mock 数据服务成功')
         dispatch({ isEnabledStart: true })
       } else {
-        _globalProxyInstance.open('error', '加载 Mock 数据服务失败')
+        _globalProxyInstance.open('error', res.message || '加载 Mock 数据服务失败')
       }
     } catch (error) {
       console.error('加载 mock 数据服务失败:', error);
