@@ -65,7 +65,7 @@ export class FairysMockerBase {
     } else {
       console.log('挂载 主应用 服务')
       this.mainApp = app
-      app.use(this.app)
+      this.mainApp.use(this.app)
     }
     return app;
   }
