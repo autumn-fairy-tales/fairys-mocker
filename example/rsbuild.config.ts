@@ -1,6 +1,6 @@
 import { defineConfig, RsbuildPlugin } from '@rsbuild/core';
 import { pluginReact, } from '@rsbuild/plugin-react';
-import { fairysMockerBase } from '@fairys/mocker-cli';
+import { fairysMockerBase, fairysMockerRsbuildPlugin } from '@fairys/mocker-cli';
 
 const myPlugin = () => ({
   setup(api) {
@@ -8,7 +8,9 @@ const myPlugin = () => ({
       fairysMockerBase.initApp(server.middlewares);
       // @ts-ignore
       fairysMockerBase.server = server.httpServer
-      fairysMockerBase.logServer(server.port);
+    });
+    api.onAfterStartDevServer((options) => {
+      fairysMockerBase.logServer(options.port);
     });
   },
 } as RsbuildPlugin);
@@ -16,7 +18,7 @@ const myPlugin = () => ({
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
   plugins: [
-    myPlugin(),
+    // fairysMockerRsbuildPlugin(),
     pluginReact(),
   ],
 

@@ -1,17 +1,16 @@
 
-import connect from 'connect';
+import express from 'express';
 import chalk from 'chalk';
 import { fairysMockerBase } from './base.js';
 import { detect } from 'detect-port';
 
-export class FairysMockerConnect {
+export class FairysMockerExpress {
   base = fairysMockerBase;
   /**创建 app*/
   createApp = () => {
-    return fairysMockerBase.initApp(connect())
+    return fairysMockerBase.initApp(express())
   }
-
-  // 使用 connect
+  // 使用express
   /**检测端口，返回实际端口*/
   detectPort = (port?: number) => {
     /**启动服务器*/
@@ -29,13 +28,14 @@ export class FairysMockerConnect {
 
   /**启动服务器*/
   listen = async (port?: number, callback?: (error?: Error) => void) => {
-    if (!fairysMockerBase.mainApp) {
+    if (!fairysMockerBase.app) {
       console.log(chalk.red('请先初始化 app'));
       return;
     }
     const app = fairysMockerBase.mainApp
     const realPort = await this.detectPort(port);
-    fairysMockerBase.server = app.listen(realPort, (...rest: any) => {
+    // @ts-ignore
+    fairysMockerBase.server = app.listen(realPort, (...rest) => {
       fairysMockerBase.logServer(realPort as number);
       callback?.(...rest);
     });
@@ -55,5 +55,5 @@ export class FairysMockerConnect {
   }
 }
 
-export const fairysMockerConnect = new FairysMockerConnect();
+export const fairysMockerExpress = new FairysMockerExpress();
 

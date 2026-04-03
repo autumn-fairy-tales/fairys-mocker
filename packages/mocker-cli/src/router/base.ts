@@ -1,5 +1,5 @@
 import express from 'express';
-import { fairysMockerBase } from "../app/base.js"
+import { fairysMockerBase } from "../base.js"
 import chalk from 'chalk';
 
 

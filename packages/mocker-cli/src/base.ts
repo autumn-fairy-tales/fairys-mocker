@@ -5,9 +5,9 @@ import fs from 'node:fs';
 import cors from "cors"
 import nodePath from "node:path";
 import { fileURLToPath } from "node:url";
-import { MockRouterController } from "../controller/mock.router.js"
-import { ClassStruct, registerRoutes } from "../utils/decorator.js"
-import { ProxyRouterController } from "../controller/proxy.router.js"
+import { MockRouterController } from "./controller/mock.router.js"
+import { ClassStruct, registerRoutes } from "./utils/decorator.js"
+import { ProxyRouterController } from "./controller/proxy.router.js"
 import chalk from "chalk"
 import http from "node:http";
 
@@ -31,32 +31,42 @@ export class FairysMockerBase {
 
   /**初始化 app 服务*/
   initApp = (app: express.Express | connect.Server): express.Express | connect.Server => {
-    this.app = express();
-    // 主应用
-    this.mainApp = app
-    // 挂子应用
-    app.use(this.app)
-    // 挂子应用
-    this.app.use(express.json());
-    this.app.use(cors());
-    /**注册主路由*/
-    this.router = express.Router();
-    /**注册内置路由*/
-    this.fairysMockerRouter = express.Router();
-    this.router.use(this.fairysMockerRouter);
-    this.app.use(this.router);
-    // 静态文件服务
-    const staticDir = nodePath.join(__dirname, '../public');
-    if (fs.existsSync(staticDir)) {
-      this.app.use(express.static(staticDir));
-      // console.log(chalk.green(`静态文件服务：${staticDir}`))
-    }
+    if (!this.app) {
+      this.mainApp = app
 
-    for (let index = 0; index < this.controller.length; index++) {
-      const Controller = this.controller[index];
-      registerRoutes(new Controller())
-    }
+      console.log('初始化 app 服务')
+      this.app = express();
+      // 挂子应用
+      this.mainApp.use(this.app)
 
+      this.app.use(express.json());
+      this.app.use(cors());
+      /**注册主路由*/
+      this.router = express.Router();
+      /**注册内置路由*/
+      this.fairysMockerRouter = express.Router();
+      this.router.use(this.fairysMockerRouter);
+
+      // 静态文件服务
+      const staticDir = nodePath.join(__dirname, '../public');
+      if (fs.existsSync(staticDir)) {
+        this.app.use(express.static(staticDir));
+        console.log(chalk.green(`静态文件服务：${staticDir}`))
+      }
+
+      for (let index = 0; index < this.controller.length; index++) {
+        const Controller = this.controller[index];
+        const newController = new Controller();
+        registerRoutes(newController)
+      }
+
+      this.app.use('/', this.router);
+
+    } else {
+      console.log('挂载 主应用 服务')
+      this.mainApp = app
+      app.use(this.app)
+    }
     return app;
   }
 

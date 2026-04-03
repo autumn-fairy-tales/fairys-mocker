@@ -3,7 +3,7 @@ import { ProxyItem } from "@fairys/create-mock-data"
 import { BaseRouter } from "./base.js"
 import { createProxyMiddleware, RequestHandler } from "http-proxy-middleware"
 import chalk from "chalk"
-import { fairysMockerBase } from "../app/base.js"
+import { fairysMockerBase } from "../base.js"
 
 /**代理 路由器实例*/
 export class ProxyRouter extends BaseRouter<ProxyItem> {
@@ -17,25 +17,21 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
     /**创建路由器实例*/
     const router = this.router = express.Router();
     this.isEnabled = true;
+
     for (let index = 0; index < proxyList.length; index++) {
       const proxyItem = proxyList[index];
-
       let protocol = 'http';
       let _target = proxyItem.target
-
       if (/^(http:|https:|ws:|wss:)/.test(proxyItem.target)) {
         const [_protocol] = proxyItem.target.split(":")
         protocol = _protocol;
       }
-
       if ((protocol !== 'ws' && protocol !== 'wss') && proxyItem.ws) {
         protocol = 'ws'
         const [_protocol, ...rest] = proxyItem.target.split(":")
         _target = [protocol, ...rest].join(":")
       }
-
       console.log(chalk.hex('#AF52DE')(chalk.bold(`🍇 proxy代理启动:\t${chalk.yellow(protocol)}\t${proxyItem.path} ===> ${_target}\t`)))
-
       // 判断是否 ^ 开头
       if (!proxyItem.path.startsWith('^')) {
         proxyItem.path = '^' + proxyItem.path;
@@ -68,6 +64,7 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
 
   /**销毁路由器实例*/
   destroy: (msg?: string) => void = (msg) => {
+    console.log("destroy")
     if (this.router) {
       // 清空路由器实例
       this.router.stack = [];

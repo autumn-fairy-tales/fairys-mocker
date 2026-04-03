@@ -2,8 +2,6 @@ import express from 'express';
 import { MockerItem, createMockItemData } from "@fairys/create-mock-data"
 import { BaseRouter } from "./base.js"
 import chalk from "chalk"
-// @ts-ignore
-import Router from "router";
 /**mock 路由器实例*/
 export class MockRouter extends BaseRouter<MockerItem> {
   /**加载mock路由*/
@@ -11,7 +9,8 @@ export class MockRouter extends BaseRouter<MockerItem> {
     /**销毁路由器实例*/
     this.destroy();
     /**创建路由器实例*/
-    const router = this.router = Router();
+    // const router = this.router = Router();
+    const router = this.router = express.Router();
     this.isEnabled = true;
     /**加载mock路由*/
     for (let index = 0; index < mockList.length; index++) {
