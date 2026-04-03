@@ -7,7 +7,7 @@ export type ClassStruct<TInstanceType extends unknown = unknown> = new (
 ) => TInstanceType;
 
 export interface RouteItemType {
-  method: 'get' | 'delete' | 'post' | 'put' | 'patch' | 'head';
+  method: 'get' | 'delete' | 'post' | 'put' | 'patch' | 'head' | 'options';
   path: string;
   funName?: string | symbol;
 }
@@ -46,11 +46,23 @@ export function Get(path: string) {
   };
 }
 
+// Method 方法装饰器
+export function MethodPath(path: string, method: RouteItemType['method'] = 'post') {
+  return (target: any, context: ClassMethodDecoratorContext) => {
+    if (context.kind === 'method') {
+      routesMap.set(target, {
+        method: method.toLowerCase() as RouteItemType['method'],
+        path, funName: context.name
+      })
+    }
+  };
+}
+
 // 注册路由（constructor 调用）
 export function registerRoutes(instance: unknown) {
-  const app = fairysMockerBase.app;
-  if (!app) {
-    console.log('请先初始化主 app');
+  const fairysRouter = fairysMockerBase.fairysMockerRouter;
+  if (!fairysRouter) {
+    console.log('请先初始化内置路由');
     return;
   }
   // 获取原型数据
@@ -72,7 +84,7 @@ export function registerRoutes(instance: unknown) {
       /**拼接前缀*/
       const fullPath = (controllerAPIRootPath?.prefix || '') + routeItem.path;
       /**方法*/
-      app[routeItem.method](fullPath, (req, res) => boundRequestHandle(req, res));
+      fairysRouter[routeItem.method](fullPath, (req, res) => boundRequestHandle(req, res));
     }
   }
 }

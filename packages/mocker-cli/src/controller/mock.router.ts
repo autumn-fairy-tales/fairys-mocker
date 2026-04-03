@@ -95,9 +95,9 @@ export default mockList;
   @Get('/_mock')
   get_mock(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query.dir as string)?.trim() || utils.dir;
-      const saveFileName = (req.query.fileName as string)?.trim() || utils.file;
-      const rootDir = (req.query.rootDir as string)?.trim() || utils.rootDir;
+      const savePath = (req.query?.dir as string)?.trim() || utils.dir;
+      const saveFileName = (req.query?.fileName as string)?.trim() || utils.file;
+      const rootDir = (req.query?.rootDir as string)?.trim() || utils.rootDir;
 
       // 读取 .cache.json 文件
       const mockerDir = nodePath.join(rootDir, savePath);
@@ -156,7 +156,6 @@ export default mockList;
         const mockList = cacheData.mockList || cacheData;
 
         this.router?.load(mockList);
-        this.router?.useRouter();
 
         res.json({
           code: 200,

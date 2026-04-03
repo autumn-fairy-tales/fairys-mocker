@@ -4,7 +4,8 @@ import './App.css';
 const App = () => {
 
   const onClick = () => {
-    fetch("http://localhost:3000/api/test", { 'method': 'POST' }).then(res => res.json()).then(data => console.log(data));
+    const origin = window.location.origin;
+    fetch(origin + "/api/test", { 'method': 'POST' }).then(res => res.json()).then(data => console.log(data));
   }
 
 

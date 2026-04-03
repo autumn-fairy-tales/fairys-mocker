@@ -12,9 +12,9 @@ if (enableCompileCache) {
   }
 }
 async function main() {
-  const { runCli } = await import('../esm/ci.js');
+  const { runExpressCli } = await import('../esm/ci.js');
   try {
-    runCli();
+    runExpressCli();
   } catch (err) {
     console.error(err);
   }

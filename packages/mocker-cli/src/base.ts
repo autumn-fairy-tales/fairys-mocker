@@ -1,5 +1,6 @@
 
 import express from 'express';
+import connect from 'connect';
 import fs from 'node:fs';
 import cors from "cors"
 import nodePath from "node:path";
@@ -8,7 +9,7 @@ import { MockRouterController } from "./controller/mock.router.js"
 import { ClassStruct, registerRoutes } from "./utils/decorator.js"
 import { ProxyRouterController } from "./controller/proxy.router.js"
 import chalk from "chalk"
-import * as http from "http";
+import http from "node:http";
 
 // 转换成 __filename 和 __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -19,24 +20,35 @@ export class FairysMockerBase {
   server: http.Server | undefined = undefined
   /**主路由*/
   router: express.Router | undefined = undefined;
-  /**应用*/
+  /**内置路由*/
+  fairysMockerRouter: express.Router | undefined = undefined;
+  /**子应用*/
   app: express.Express | undefined = undefined;
+  /**主应用*/
+  mainApp: express.Express | connect.Server | undefined = undefined;
   /**类*/
   controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
-  /**初始化 app 服务*/
-  initApp = (app: express.Express) => {
-    this.app = app;
-    app.use(express.json());
-    app.use(cors());
 
+  /**初始化 app 服务*/
+  initApp = (app: express.Express | connect.Server): express.Express | connect.Server => {
+    this.app = express();
+    // 主应用
+    this.mainApp = app
+    // 挂子应用
+    app.use(this.app)
+    // 挂子应用
+    this.app.use(express.json());
+    this.app.use(cors());
     /**注册主路由*/
     this.router = express.Router();
+    /**注册内置路由*/
+    this.fairysMockerRouter = express.Router();
+    this.router.use(this.fairysMockerRouter);
     this.app.use(this.router);
-
     // 静态文件服务
     const staticDir = nodePath.join(__dirname, '../public');
     if (fs.existsSync(staticDir)) {
-      app.use(express.static(staticDir));
+      this.app.use(express.static(staticDir));
       // console.log(chalk.green(`静态文件服务：${staticDir}`))
     }
 
@@ -58,6 +70,12 @@ export class FairysMockerBase {
     console.log(chalk.green(`\tfairys-mocker API地址:    http://localhost:${port}`));
     console.log(chalk.green(`\tfairys-mocker UI地址:     http://localhost:${port}/_fairys_mocker`));
     console.log("")
+  }
+
+  close = () => {
+    if (this.server) {
+      this.server.close();
+    }
   }
 }
 
