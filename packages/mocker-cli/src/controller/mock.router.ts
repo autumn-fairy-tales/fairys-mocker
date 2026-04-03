@@ -51,8 +51,6 @@ export interface MockerItem {
   body: any;
   /**接口地址*/
   url: string;
-  /**响应体格式类型*/
-  bodyFormat: 'object' | 'list';
   /**列表数据条数（仅 list 格式有效）*/
   listCount?: number;
 }

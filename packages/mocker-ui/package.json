@@ -14,7 +14,8 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "@fairys/create-mock-data": "^0.0.0",
-    "@carefrees/valtio": "^0.0.16"
+    "@carefrees/valtio": "^0.0.16",
+    "@uiw/react-textarea-code-editor": "~3.1.1"
   },
   "devDependencies": {
     "@types/mockjs": "^1.0.10",

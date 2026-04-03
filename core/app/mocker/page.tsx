@@ -13,8 +13,6 @@ interface MockerItem {
   body: any;
   /**接口地址*/
   url: string;
-  /**响应体格式类型*/
-  bodyFormat: 'object' | 'list';
   /**列表数据条数（仅 list 格式有效）*/
   listCount: number;
 }
@@ -24,31 +22,6 @@ type DefineMockList = MockerItem[];
 
 export default function MockerPage() {
   const [mockList, setMockList] = useState<DefineMockList>([
-    // {
-    //   url: '/api/test',
-    //   method: 'POST',
-    //   status: '200',
-    //   delay: 0,
-    //   body: { code: 200, data: { id: '@id', name: '@name', email: '@email' }, message: 'success' },
-    //   bodyFormat: 'object',
-    //   listCount: 20,
-    // },
-    // {
-    //   url: '/api/list',
-    //   method: 'POST',
-    //   status: '200',
-    //   delay: 0,
-    //   body: {
-    //     code: 200,
-    //     data: {
-    //       rows: [{ id: '@id', name: '@name' }],
-    //       total: '@integer(20, 100)'
-    //     },
-    //     message: 'success'
-    //   },
-    //   bodyFormat: 'list',
-    //   listCount: 20,
-    // },
   ]);
 
   const [response, setResponse] = useState<string>('');
@@ -88,7 +61,6 @@ export default function MockerPage() {
       status: '200',
       delay: 0,
       body: { code: 200, data: {}, message: 'success' },
-      bodyFormat: 'object',
       listCount: 20,
     }]);
   };
@@ -129,20 +101,6 @@ export default function MockerPage() {
       if (!item.status.trim()) {
         isValid = false;
         errorMessage = `接口配置 #${i + 1} 的 状态码 不能为空`;
-        break;
-      }
-
-      // 校验响应体格式
-      if (!item.bodyFormat) {
-        isValid = false;
-        errorMessage = `接口配置 #${i + 1} 的 响应体格式 不能为空`;
-        break;
-      }
-
-      // 校验生成数据条数（仅 list 格式时）
-      if (item.bodyFormat === 'list' && (!item.listCount || item.listCount < 1)) {
-        isValid = false;
-        errorMessage = `接口配置 #${i + 1} 的 生成数据条数 必须大于 0`;
         break;
       }
 
@@ -321,60 +279,6 @@ export default function MockerPage() {
                     placeholder="例如: 1000 或 500,2000"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    <span className="text-red-500">*</span> 响应体格式
-                  </label>
-                  <select
-                    value={item.bodyFormat}
-                    onChange={(e) => {
-                      const newFormat = e.target.value as 'object' | 'list';
-                      updateMockerItem(index, 'bodyFormat', newFormat);
-                      // 根据选择的格式更新响应体内容
-                      if (newFormat === 'object') {
-                        updateMockerItem(index, 'body', {
-                          code: 200,
-                          data: { id: '@id', name: '@name', email: '@email' },
-                          message: 'success'
-                        });
-                      } else {
-                        updateMockerItem(index, 'body', {
-                          code: 200,
-                          data: {
-                            rows: [{ id: '@id', name: '@name' }],
-                            total: '@integer(20, 100)'
-                          },
-                          message: 'success'
-                        });
-                      }
-                    }}
-                    className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                  >
-                    <option value="object">对象</option>
-                    <option value="list">对象数组</option>
-                  </select>
-                </div>
-
-                {item.bodyFormat === 'list' ? (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        <span className="text-red-500">*</span> 生成数据条数
-                      </label>
-                      <input
-                        type="number"
-                        value={item.listCount}
-                        onChange={(e) => updateMockerItem(index, 'listCount', parseInt(e.target.value) || 1)}
-                        min="1"
-                        max="100"
-                        className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white"
-                      />
-                    </div>
-                  </>
-                ) : <></>}
               </div>
 
               <div className="mt-4">

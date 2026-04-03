@@ -11,8 +11,6 @@ export interface MockerItem {
   body: any;
   /**接口地址*/
   url: string;
-  /**响应体格式类型*/
-  bodyFormat: 'object' | 'list';
   /**列表数据条数（仅 list 格式有效）*/
   listCount: number;
 }
@@ -23,34 +21,29 @@ export type DefineMockList = MockerItem[];
 export function createMockItemData(item: MockerItem) {
   // 生成 Mock 数据
   let mockBody;
-  if (item.bodyFormat === 'list') {
-    // 为列表格式生成指定数量的数据
-    let { data, ...listBody } = { ...item.body };
-    const saveData: Record<string, any> = {}
-    const objectKeys = Object.keys(data);
-    const listCount = item.listCount;
-    for (let index = 0; index < objectKeys.length; index++) {
-      const key = objectKeys[index];
-      const itemConfig = data[key];
-      // 处理数组对象数据
-      if (/^(\_\|)/.test(key)) {
-        /**数组的时候，判断字段是否有 个数 字段*/
-        const [_, _key, count] = key.split('|');
-        const _count = `${count || ''}`.trim();
-        if (itemConfig) {
-          saveData[_key] = Array.from({ length: _count ? Number(_count) : listCount }, () => Mock.mock(itemConfig));
-        }
-      } else {
-        const valueMock = Mock.mock({ [key]: itemConfig });
-        Object.assign(saveData, valueMock);
+  // 为列表格式生成指定数量的数据
+  let { data, ...listBody } = { ...item.body };
+  const saveData: Record<string, any> = {}
+  const objectKeys = Object.keys(data);
+  const listCount = item.listCount || 20;
+  for (let index = 0; index < objectKeys.length; index++) {
+    const key = objectKeys[index];
+    const itemConfig = data[key];
+    // 处理数组对象数据
+    if (/^(\_\|)/.test(key)) {
+      /**数组的时候，判断字段是否有 个数 字段*/
+      const [_, _key, count] = key.split('|');
+      const _count = `${count || ''}`.trim();
+      if (itemConfig) {
+        saveData[_key] = Array.from({ length: _count ? Number(_count) : listCount }, () => Mock.mock(itemConfig));
       }
+    } else {
+      const valueMock = Mock.mock({ [key]: itemConfig });
+      Object.assign(saveData, valueMock);
     }
-    listBody.data = saveData;
-    mockBody = listBody;
-  } else {
-    // 直接生成对象格式数据
-    mockBody = Mock.mock(item.body);
   }
+  listBody.data = saveData;
+  mockBody = listBody;
   // 处理延迟
   let delay = 0;
   if (Array.isArray(item.delay)) {

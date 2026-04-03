@@ -7,7 +7,6 @@ fairys-mocker 是一个功能强大的 mock 数据生成和代理转发工具，
 ### 1. Mock 数据生成
 - 支持 Mock.js 语法生成模拟数据
 - 可配置请求方法、状态码、延迟时间
-- 支持对象和列表两种响应体格式
 - 可自定义列表数据条数
 - 支持响应体的自定义编辑
 
@@ -92,7 +91,6 @@ POST /_fairys/_mock
         },
         "message": "success"
       },
-      "bodyFormat": "object",
       "listCount": 20
     }
   ],
@@ -124,7 +122,6 @@ GET /_fairys/_proxy/_start?dir=mock&fileName=proxy
 | status | string | 状态码 |
 | delay | number/array | 响应延迟时间，数组表示范围 |
 | body | any | 响应体，支持 Mock.js 语法 |
-| bodyFormat | string | 响应体格式（object 或 list） |
 | listCount | number | 列表数据条数（仅 list 格式有效） |
 
 ### 代理配置

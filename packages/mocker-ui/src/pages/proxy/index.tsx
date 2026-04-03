@@ -4,6 +4,8 @@ import { useGlobalProxyStore } from "@/models"
 import { API_BASE_URL } from "@/utils"
 import { Table } from '@/components/table';
 import { createProxyData, type ProxyItem, type ProxyList } from '@fairys/create-mock-data';
+import { createPortal } from "react-dom"
+import { JSONEdit } from '@/components/json.edit';
 
 export default function ProxyConfig() {
 
@@ -250,8 +252,8 @@ export default function ProxyConfig() {
   const saveBodyModal = () => {
     if (currentIndex !== null) {
       try {
-        const body = JSON.parse(modalBody);
-        updateProxyItem(currentIndex, 'pathRewrite', body);
+        const jsonData = new Function('return ' + modalBody)();
+        updateProxyItem(currentIndex, 'pathRewrite', jsonData);
         closeBodyModal();
       } catch (error) {
         // 解析失败时不更新
@@ -488,7 +490,7 @@ export default function ProxyConfig() {
 
       {/* 响应体编辑模态框 */}
       {isModalOpen && currentIndex !== null && proxyList?.[currentIndex] && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+        createPortal(<div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-lg shadow-xl p-4 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -507,15 +509,15 @@ export default function ProxyConfig() {
                 <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                   路径重写 JSON <span className="text-red-500">*</span>
                 </label>
-                <textarea
+                <JSONEdit
                   value={modalBody}
-                  onChange={(e) => dispatch({ modalBody: e.target.value })}
+                  onChange={(modalBody) => dispatch({ modalBody })}
                   className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white min-h-[300px] text-xs"
                   placeholder='例如: { "^/api":"" , "^/api/test":"/api" }'
                 />
               </div>
             </div>
-            <div className="flex justify-end space-x-2 mt-3">
+            <div className="flex justify-end space-x-2 mt-3 box-border">
               <button
                 type="button"
                 onClick={closeBodyModal}
@@ -532,7 +534,7 @@ export default function ProxyConfig() {
               </button>
             </div>
           </div>
-        </div>
+        </div>, document.body)
       )}
     </div>
   );
