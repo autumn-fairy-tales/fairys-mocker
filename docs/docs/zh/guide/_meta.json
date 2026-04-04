@@ -1,1 +1,5 @@
-["index"]
+[
+  "index",
+  "ci",
+  "plugins"
+]

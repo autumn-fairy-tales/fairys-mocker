@@ -1,0 +1,65 @@
+---
+title: 插件
+---
+
+## rsbuild 插件
+
+```ts
+import { fairysMockerRsbuildPlugin } from '@fairys/mocker-cli'
+
+```
+
+### 使用
+
+```ts
+import { defineConfig, } from '@rsbuild/core';
+import { fairysMockerRsbuildPlugin } from '@fairys/mocker-cli';
+
+export default defineConfig({
+  plugins: [
+    fairysMockerRsbuildPlugin(),
+  ],
+});
+
+```
+
+### rsbuild 自定义服务
+
+```ts
+import express from "express";
+import { createRsbuild, loadConfig } from "@rsbuild/core";
+import { fairysMockerExpress } from "@fairys/mocker-cli"
+
+export async function startDevServer() {
+  const { content } = await loadConfig({});
+
+  // Init Rsbuild
+  const rsbuild = await createRsbuild({
+    rsbuildConfig: content,
+  });
+
+  const app = fairysMockerExpress.createApp();
+
+  // Create Rsbuild DevServer instance
+  const rsbuildServer = await rsbuild.createDevServer();
+
+  // Apply Rsbuild’s built-in middlewares
+  app.use(rsbuildServer.middlewares);
+
+  const httpServer = await fairysMockerExpress.listen(rsbuildServer.port, () => {
+    // Notify Rsbuild that the custom server has started
+    rsbuildServer.afterListen();
+  });
+
+  rsbuildServer.connectWebSocket({ server: httpServer });
+
+  return {
+    close: async () => {
+      await rsbuildServer.close();
+      fairysMockerExpress.base.server.close();
+    },
+  };
+}
+
+startDevServer();
+```
