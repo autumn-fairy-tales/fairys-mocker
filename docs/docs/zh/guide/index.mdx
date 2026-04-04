@@ -11,6 +11,7 @@ fairys-mocker 由三个核心包组成：
 - **核心特性**：
   - 支持 Mock.js 语法生成模拟数据
   - 支持列表数据的批量生成
+  - 支持数组对象数据的批量生成
   - 支持代理配置的转换和处理
 - **使用场景**：可单独用于生成 mock 数据，或作为其他包的依赖
 
@@ -20,6 +21,8 @@ fairys-mocker 由三个核心包组成：
   - 启动本地 mock 服务和代理服务
   - 提供 RESTful API 接口管理服务
   - 支持配置文件的保存和加载
+  - 支持端口自动检测
+  - 支持静态文件服务
 - **使用场景**：作为开发工具全局或本地安装使用
 
 ### 3. @fairys/mocker-ui
@@ -28,6 +31,7 @@ fairys-mocker 由三个核心包组成：
   - 可视化配置 mock 数据
   - 可视化配置代理规则
   - 支持配置的保存和加载
+  - 支持响应体的实时编辑
 - **使用场景**：通过浏览器访问 UI 界面进行配置管理
 
 ## 核心功能
@@ -38,6 +42,7 @@ fairys-mocker 由三个核心包组成：
 - 可自定义列表数据条数
 - 支持响应体的自定义编辑
 - 支持数组对象数据的批量生成
+- 支持延迟时间的范围配置
 
 ### 2. 代理转发
 - 支持 HTTP 请求代理
@@ -49,12 +54,17 @@ fairys-mocker 由三个核心包组成：
 - 可视化配置 mock 数据
 - 可视化配置代理规则
 - 支持配置的保存和加载
-- 支持配置的导出和导入
+- 支持响应体的实时编辑
 
 ### 4. RESTful API
 - 提供完整的 API 接口管理 mock 和代理服务
 - 支持服务的启动和销毁
 - 支持配置的读取和保存
+- 支持服务状态的检查
+
+### 5. 端口自动检测
+- 自动检测端口占用情况
+- 自动使用可用端口
 
 ## 安装
 
@@ -144,16 +154,74 @@ POST /_fairys/_mock
 }
 ```
 
+#### 读取 Mock 配置
+
+```bash
+GET /_fairys/_mock?dir=mock&fileName=index.mock
+```
+
 #### 启动 Mock 服务
 
 ```bash
 GET /_fairys/_mock/_start?dir=mock&fileName=index.mock
 ```
 
+#### 销毁 Mock 服务
+
+```bash
+GET /_fairys/_mock/_destroy
+```
+
+#### 检查 Mock 服务状态
+
+```bash
+GET /_fairys/_mock/_is_enabled
+```
+
+#### 保存代理配置
+
+```bash
+POST /_fairys/_proxy
+
+请求体：
+{
+  "proxyList": [
+    {
+      "path": "/api",
+      "target": "https://api.example.com",
+      "pathRewrite": {
+        "^/api": ""
+      },
+      "ws": true
+    }
+  ],
+  "dir": "mock",
+  "fileName": "proxy"
+}
+```
+
+#### 读取代理配置
+
+```bash
+GET /_fairys/_proxy?dir=mock&fileName=proxy
+```
+
 #### 启动代理服务
 
 ```bash
 GET /_fairys/_proxy/_start?dir=mock&fileName=proxy
+```
+
+#### 销毁代理服务
+
+```bash
+GET /_fairys/_proxy/_destroy
+```
+
+#### 检查代理服务状态
+
+```bash
+GET /_fairys/_proxy/_is_enabled
 ```
 
 ## 配置说明
@@ -210,6 +278,8 @@ GET /_fairys/_proxy/_start?dir=mock&fileName=proxy
   - Mock.js（数据生成）
   - http-proxy-middleware（代理转发）
   - detect-port（端口检测）
+  - express（Web 服务器）
+  - cors（跨域支持）
   - @uiw/react-textarea-code-editor（代码编辑器）
   - @carefrees/valtio（状态管理）
 - **构建工具**：rsbuild
