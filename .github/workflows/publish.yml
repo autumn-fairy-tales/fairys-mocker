@@ -27,7 +27,7 @@ jobs:
 
     - name: example
       run: |
-          mv ./packages/mocker-ui/demo/ ./docs/doc_build/ui/
+          mv ./packages/mocker-ui/_fairys_mocker/ ./docs/doc_build/_fairys_mocker/
 
     - name: Create Doc
       uses: peaceiris/actions-gh-pages@v4
