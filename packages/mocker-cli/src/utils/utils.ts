@@ -12,6 +12,10 @@ class Utils {
   public file = 'index.mock';
   /**代理文件名*/
   public proxyFile = 'proxy';
+  /**是否生成mock数据文件*/
+  public isCreateMockDataFile = true;
+  /**是否生成proxy数据文件*/
+  public isCreateProxyDataFile = true;
 
   /**设置根目录*/
   setRootDir = (value?: string) => {
@@ -41,6 +45,21 @@ class Utils {
   setProxyFile = (value?: string) => {
     this.proxyFile = value || process.env.FAIRYS_MOCKER_PROXY_FILE || 'proxy';
   }
+
+  /**设置 是否生成mock数据文件*/
+  setIsCreateMockDataFile = (fig?: boolean) => {
+    if (typeof fig === "boolean") {
+      this.isCreateMockDataFile = fig
+    }
+  }
+
+  /**设置 是否生成proxy数据文件*/
+  setIsCreateProxyDataFile = (fig?: boolean) => {
+    if (typeof fig === "boolean") {
+      this.isCreateProxyDataFile = fig
+    }
+  }
+
 }
 
 export const utils = new Utils()

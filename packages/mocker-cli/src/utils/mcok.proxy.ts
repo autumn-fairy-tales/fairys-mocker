@@ -38,9 +38,9 @@ export const createProxyFile = (proxyList: ProxyList, rootDir?: string, dir?: st
     fs.mkdirSync(proxyDir, { recursive: true });
   }
   const proxyConfig = createProxyData(proxyList)
-
-  const proxyFilePath = nodePath.join(proxyDir, `${_fileName}.ts`);
-  const proxyFileContent = `// 代理配置文件
+  if (utils.isCreateProxyDataFile) {
+    const proxyFilePath = nodePath.join(proxyDir, `${_fileName}.ts`);
+    const proxyFileContent = `// 代理配置文件
 // 自动生成于 ${new Date().toISOString()}
 
 /**
@@ -58,10 +58,11 @@ export type ProxyItem = Record<string,{
 export const proxyConfig: ProxyItem = ${JSON.stringify(proxyConfig, null, 2)};
 export default proxyConfig;
     `;
-  fs.writeFileSync(proxyFilePath, proxyFileContent);
+    fs.writeFileSync(proxyFilePath, proxyFileContent);
+  }
+
   // 存储原始的 proxyConfig 到 .cache.json 文件
   const cacheFilePath = nodePath.join(proxyDir, _fileName + '.cache.json');
-
   const cacheFileContent = JSON.stringify({
     proxyList,
     rootDir: _rootDir,
@@ -113,9 +114,9 @@ export const createMockFile = (mockList: DefineMockList, rootDir?: string, dir?:
     fs.mkdirSync(mockDir, { recursive: true });
   }
   const mockConfig = createMockData(mockList)
-
-  const mockFilePath = nodePath.join(mockDir, `${_fileName}.ts`);
-  const mockFileContent = `// Mock 配置文件
+  if (utils.isCreateMockDataFile) {
+    const mockFilePath = nodePath.join(mockDir, `${_fileName}.ts`);
+    const mockFileContent = `// Mock 配置文件
 // 自动生成于 ${new Date().toISOString()}
     
 export interface MockerItem {
@@ -139,7 +140,9 @@ export type DefineMockList = MockerItem[];
 export const mockList: DefineMockList = ${JSON.stringify(mockConfig, null, 2)};
 export default mockList;
     `;
-  fs.writeFileSync(mockFilePath, mockFileContent);
+    fs.writeFileSync(mockFilePath, mockFileContent);
+  }
+
   // 存储原始的 mockConfig 到 .cache.json 文件
   const cacheFilePath = nodePath.join(mockDir, _fileName + '.cache.json');
 

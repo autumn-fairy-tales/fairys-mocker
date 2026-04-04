@@ -38,9 +38,12 @@ export class FairysMockerBase {
       return;
     }
     if (fs.existsSync(dir)) {
-      const _prefix = /^\/$/.test(prefix) ? prefix : `/${prefix}`;
+      let _prefix = prefix;
+      if (!/^\//.test(prefix)) {
+        _prefix = "/" + prefix
+      }
       this.app.use(_prefix, express.static(dir));
-      // console.log(chalk.green(`静态文件服务：${dir}`))
+      // console.log(chalk.green(`静态文件服务：${_prefix}\t${dir}`))
       if (isRegister) {
         this.staticServerList.push(_prefix)
       }
