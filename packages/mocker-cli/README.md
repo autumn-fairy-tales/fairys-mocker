@@ -23,6 +23,8 @@ Options:
   --dir         设置目录名(默认取环境变量中的`FAIRYS_MOCKER_DIR`)
   --file        设置文件名(默认取环境变量中的`FAIRYS_MOCKER_FILE`)
   --file2       设置文件名2(默认取环境变量中的`FAIRYS_MOCKER_PROXY_FILE`)
+  --static      设置静态文件目录
+  --static-prefix 设置静态文件路径前缀
 ```
 
 **参数说明**
