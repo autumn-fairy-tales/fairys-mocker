@@ -19,20 +19,23 @@ Usage:
   $ fairys-mocker
 
 Options:
-  --root        设置根目录路径(默认取环境变量中的`FAIRYS_MOCKER_ROOT_DIR`)
-  --dir         设置目录名(默认取环境变量中的`FAIRYS_MOCKER_DIR`)
-  --file        设置文件名(默认取环境变量中的`FAIRYS_MOCKER_FILE`)
-  --file2       设置文件名2(默认取环境变量中的`FAIRYS_MOCKER_PROXY_FILE`)
-  --static      设置静态文件目录
-  --static-prefix 设置静态文件路径前缀
+  --root            设置根目录路径(默认取环境变量中的`FAIRYS_MOCKER_ROOT_DIR`)
+  --dir             设置目录名(默认取环境变量中的`FAIRYS_MOCKER_DIR`)
+  --file            设置文件名(默认取环境变量中的`FAIRYS_MOCKER_FILE`)
+  --file2           设置文件名2(默认取环境变量中的`FAIRYS_MOCKER_PROXY_FILE`)
+  --static          设置静态文件目录
+  --static-prefix   设置静态文件路径前缀
+  --is-mock-file    是否生成mock数据文件,默认生成.
+  --is-proxy-file   是否生成proxy数据文件,默认生成.
+  --is-connect      是否是connect服务.默认express.
 ```
 
 **参数说明**
 
-`FAIRYS_MOCKER_ROOT_DIR`或`root`：未设置时，取当前执行命令目录
-`FAIRYS_MOCKER_DIR`或者`dir`：未设置时，取当前执行命令目录的`mock`文件夹
-`FAIRYS_MOCKER_FILE`或者`file`：未设置时，取当前执行命令目录的`mock`文件夹下的`index.mock.cache.json`文件
-`FAIRYS_MOCKER_PROXY_FILE`或者`file2`：未设置时，取当前执行命令目录的`mock`文件夹下的`proxy.cache.json`文件
+- `FAIRYS_MOCKER_ROOT_DIR`或`root`：未设置时，取当前执行命令目录
+- `FAIRYS_MOCKER_DIR`或者`dir`：未设置时，取当前执行命令目录的`mock`文件夹
+- `FAIRYS_MOCKER_FILE`或者`file`：未设置时，取当前执行命令目录的`mock`文件夹下的`index.mock.cache.json`文件
+- `FAIRYS_MOCKER_PROXY_FILE`或者`file2`：未设置时，取当前执行命令目录的`mock`文件夹下的`proxy.cache.json`文件
 
 在使用的过程中会生成4个文件
 
