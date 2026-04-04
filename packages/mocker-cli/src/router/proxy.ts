@@ -22,6 +22,8 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
       const proxyItem = proxyList[index];
       let protocol = 'http';
       let _target = proxyItem.target
+      let _path = new RegExp(proxyItem.path)
+
       if (/^(http:|https:|ws:|wss:)/.test(proxyItem.target)) {
         const [_protocol] = proxyItem.target.split(":")
         protocol = _protocol;
@@ -34,7 +36,7 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
       console.log(chalk.hex('#AF52DE')(chalk.bold(`🍇 proxy代理启动:\t${chalk.yellow(protocol)}\t${proxyItem.path} ===> ${_target}\t`)))
       // 判断是否 ^ 开头
       if (!proxyItem.path.startsWith('^')) {
-        proxyItem.path = '^' + proxyItem.path;
+        _path = new RegExp('^' + proxyItem.path)
       }
       if (proxyItem.ws) {
         const wsProxy = createProxyMiddleware({
@@ -44,13 +46,15 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
           changeOrigin: true,
         })
         _that.wsProxyList.push(wsProxy)
-        router.use(proxyItem.path, wsProxy)
+        router.all(_path, wsProxy)
+        // 这个地方有个问题，如果在 rsbuild 中使用，websocket 会有问题
         if (fairysMockerBase.server) {
           // 升级 WebSocket 处理
           fairysMockerBase.server?.on('upgrade', wsProxy.upgrade)
         }
       } else {
-        router.use(proxyItem.path, createProxyMiddleware({
+        // 这个不生效问题
+        router.all(_path, createProxyMiddleware({
           target: proxyItem.target,
           pathRewrite: proxyItem.pathRewrite,
           ws: proxyItem.ws,
@@ -64,7 +68,6 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
 
   /**销毁路由器实例*/
   destroy: (msg?: string) => void = (msg) => {
-    console.log("destroy")
     if (this.router) {
       // 清空路由器实例
       this.router.stack = [];

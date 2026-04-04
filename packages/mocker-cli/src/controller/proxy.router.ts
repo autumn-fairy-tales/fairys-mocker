@@ -6,6 +6,8 @@ import { Get, Post, Controller } from "../utils/decorator.js"
 import { utils } from "../utils/index.js"
 import { ProxyRouter } from '../router/proxy.js';
 import { BaseController } from './base.js';
+import { getProxyFile, createProxyFile } from '../utils/mcok.proxy.js';
+import chalk from 'chalk';
 
 /**路由*/
 @Controller('/_fairys')
@@ -26,57 +28,27 @@ export class ProxyRouterController extends BaseController {
       if (rootDir && !fs.existsSync(rootDir)) {
         _rootDir = utils.rootDir;
       }
-
-      // 存储到本地文件
-      const safeSavePath = dir.trim() || utils.dir;
-      const safeSaveFileName = fileName.trim() || utils.proxyFile;
-      const mockerDir = nodePath.join(_rootDir, safeSavePath);
-      if (!fs.existsSync(mockerDir)) {
-        fs.mkdirSync(mockerDir, { recursive: true });
+      const proxyData = createProxyFile(proxyList, _rootDir, dir, fileName)
+      if (proxyData?.proxyConfig) {
+        if (this.router?.isEnabled) {
+          this.router?.load(proxyList);
+        }
+        res.json({
+          code: 200,
+          message: '代理配置保存成功',
+          data: proxyData.proxyConfig,
+          proxyList: proxyList,
+          rootDir: proxyData.rootDir,
+          dir: proxyData.dir,
+          cache: proxyData.cache,
+          fileName: proxyData.fileName,
+        });
+      } else {
+        res.json({
+          code: 404,
+          message: '生成配置文件错误',
+        });
       }
-
-      const proxyConfig = createProxyData(proxyList)
-
-      const proxyFilePath = nodePath.join(mockerDir, `${safeSaveFileName}.ts`);
-      const proxyFileContent = `// 代理配置文件
-// 自动生成于 ${new Date().toISOString()}
-
-/**
- * 代理配置参数
- */
-export type ProxyItem = Record<string,{
-  /**转发地址*/
-  target: string,
-  /**路径重写*/
-  pathRewrite?: Record<string, string>,
-  /**是否开启ws*/
-  ws?: boolean
-}> 
-
-export const proxyConfig: ProxyItem = ${JSON.stringify(proxyConfig, null, 2)};
-export default proxyConfig;
-    `;
-      fs.writeFileSync(proxyFilePath, proxyFileContent);
-      // 存储原始的 proxyConfig 到 .cache.json 文件
-      const cacheFilePath = nodePath.join(mockerDir, safeSaveFileName + '.cache.json');
-      const cacheFileContent = JSON.stringify({
-        proxyList,
-        rootDir: _rootDir,
-        dir: safeSavePath,
-        fileName: safeSaveFileName,
-        cache: safeSaveFileName + '.cache.json',
-      }, null, 2);
-      fs.writeFileSync(cacheFilePath, cacheFileContent);
-      res.json({
-        code: 200,
-        message: '代理配置保存成功',
-        data: proxyConfig,
-        proxyList: proxyList,
-        rootDir: _rootDir,
-        dir: safeSavePath,
-        cache: safeSaveFileName + '.cache.json',
-        fileName: safeSaveFileName,
-      });
     } catch (error: any) {
       res.status(500).json({
         code: 500,
@@ -89,25 +61,19 @@ export default proxyConfig;
   @Get('/_proxy')
   get_proxy(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query.dir as string)?.trim() || utils.dir;
-      const saveFileName = (req.query.fileName as string)?.trim() || utils.proxyFile;
-      const rootDir = (req.query.rootDir as string)?.trim() || utils.rootDir;
-
-      // 读取 .cache.json 文件
-      const mockerDir = nodePath.join(rootDir, savePath);
-      const cacheFilePath = nodePath.join(mockerDir, saveFileName + '.cache.json');
-      if (fs.existsSync(cacheFilePath)) {
-        const cacheFileContent = fs.readFileSync(cacheFilePath, 'utf-8');
-        const cacheData = JSON.parse(cacheFileContent);
-        const proxyList = cacheData.proxyList || [];
+      const savePath = (req.query.dir as string)?.trim()
+      const saveFileName = (req.query.fileName as string)?.trim()
+      const rootDir = (req.query.rootDir as string)?.trim()
+      const proxyData = getProxyFile(rootDir, savePath, saveFileName);
+      if (proxyData?.proxyList) {
         res.json({
           code: 200,
           message: '读取代理配置成功',
-          data: proxyList,
-          rootDir: rootDir,
-          dir: savePath,
-          cache: saveFileName + '.cache.json',
-          fileName: saveFileName,
+          data: proxyData.proxyList,
+          rootDir: proxyData.rootDir,
+          dir: proxyData.dir,
+          cache: proxyData.cache,
+          fileName: proxyData.fileName,
         });
       } else {
         res.json({
@@ -138,31 +104,22 @@ export default proxyConfig;
   @Get('/_proxy/_start')
   get_proxy_start(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query.dir as string)?.trim() || utils.dir;
-      const saveFileName = (req.query.fileName as string)?.trim() || utils.proxyFile;
-      const rootDir = (req.query.rootDir as string)?.trim() || utils.rootDir;
-
-      // 读取 .cache.json 文件
-      const mockerDir = nodePath.join(rootDir, savePath);
-      const cacheFilePath = nodePath.join(mockerDir, saveFileName + '.cache.json');
-      if (fs.existsSync(cacheFilePath)) {
-        const cacheFileContent = fs.readFileSync(cacheFilePath, 'utf-8');
-        const cacheData = JSON.parse(cacheFileContent);
-        const proxyList = cacheData.proxyList || [];
-
-        this.router?.load(proxyList);
-
+      const savePath = (req.query.dir as string)?.trim()
+      const saveFileName = (req.query.fileName as string)?.trim();
+      const rootDir = (req.query.rootDir as string)?.trim()
+      const proxyData = getProxyFile(rootDir, savePath, saveFileName);
+      if (proxyData?.proxyList) {
+        this.router?.load(proxyData.proxyList);
         res.json({
           code: 200,
           message: '启动代理服务成功',
-          data: proxyList,
+          data: proxyData.proxyList,
           rootDir: rootDir,
-          dir: savePath,
-          cache: saveFileName + '.cache.json',
-          fileName: saveFileName,
+          dir: proxyData.dir,
+          cache: proxyData.cache,
+          fileName: proxyData.fileName,
           isEnabled: true,
         });
-
       } else {
         res.json({
           code: 404,
@@ -200,6 +157,25 @@ export default proxyConfig;
         message: '销毁代理服务失败',
         error: error.message
       });
+    }
+  }
+
+  start = (rootDir?: string, dir?: string, fileName?: string) => {
+    try {
+      const proxyData = getProxyFile(rootDir, dir, fileName);
+      if (proxyData?.proxyList) {
+        try {
+          this.router?.load(proxyData.proxyList);
+          console.log(chalk.green(`启动代理服务成功，配置文件：${proxyData.rootDir}/${proxyData.dir}/${proxyData.fileName}.ts`))
+          console.log('')
+        } catch (error) {
+          console.log(chalk.red(`启动代理服务失败，配置文件：${proxyData.rootDir}/${proxyData.dir}/${proxyData.fileName}.ts`))
+          console.log('')
+        }
+      }
+    } catch (error) {
+      console.log(chalk.red(`启动代理服务失败`))
+      console.log('')
     }
   }
 

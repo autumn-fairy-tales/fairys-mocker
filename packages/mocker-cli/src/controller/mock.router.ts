@@ -1,11 +1,11 @@
 import express from 'express';
 import fs from 'node:fs';
-import nodePath from "node:path"
-import { createMockData, } from '@fairys/create-mock-data';
 import { Get, Post, Controller } from "../utils/decorator.js"
 import { utils } from "../utils/index.js"
 import { MockRouter } from "../router/mock.js"
 import { BaseController } from "./base.js"
+import { getMcokFile, createMockFile } from '../utils/mcok.proxy.js';
+import chalk from 'chalk';
 
 /**路由*/
 @Controller('/_fairys')
@@ -27,61 +27,23 @@ export class MockRouterController extends BaseController {
       if (rootDir && !fs.existsSync(rootDir)) {
         _rootDir = utils.rootDir;
       }
-
-      const processedList = createMockData(mockList)
-      // 存储到本地文件
-      const safeSavePath = dir.trim() || 'mock';
-      const safeSaveFileName = fileName.trim() || 'index.mock';
-      const mockerDir = nodePath.join(_rootDir, safeSavePath);
-      if (!fs.existsSync(mockerDir)) {
-        fs.mkdirSync(mockerDir, { recursive: true });
+      const mockData = createMockFile(mockList, _rootDir, dir, fileName)
+      if (mockData?.mockConfig) {
+        if (this.router?.isEnabled) {
+          this.router?.load(mockData.mockConfig);
+        }
+        res.json({
+          code: 200,
+          message: 'Mock 配置保存成功',
+          data: mockData.mockConfig,
+          mockList: mockList,
+          rootDir: mockData.rootDir,
+          dir: mockData.dir,
+          cache: mockData.cache,
+          fileName: mockData.fileName,
+        });
       }
-      const mockFilePath = nodePath.join(mockerDir, `${safeSaveFileName}.ts`);
-      const mockFileContent = `// Mock 配置文件
-// 自动生成于 ${new Date().toISOString()}
-    
-export interface MockerItem {
-  /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
-  /**状态码*/
-  status: string;
-  //配置响应延迟时间, 如果传入的是一个数组，则代表延迟时间的范围
-  delay: number | [number, number];
-  /**响应体(可以自定义返回格式)*/
-  body: any;
-  /**接口地址*/
-  url: string;
-  /**列表数据条数（仅 list 格式有效）*/
-  listCount?: number;
-}
 
-/**mock配置 列表*/
-export type DefineMockList = MockerItem[];
-
-export const mockList: DefineMockList = ${JSON.stringify(processedList, null, 2)};
-export default mockList;
-    `;
-      fs.writeFileSync(mockFilePath, mockFileContent);
-      // 存储原始的 mockList 和 savePath 到 .cache.json 文件
-      const cacheFilePath = nodePath.join(mockerDir, safeSaveFileName + '.cache.json');
-      const cacheFileContent = JSON.stringify({
-        mockList,
-        rootDir: utils.rootDir,
-        dir: safeSavePath,
-        fileName: safeSaveFileName,
-        cache: safeSaveFileName + '.cache.json',
-      }, null, 2);
-      fs.writeFileSync(cacheFilePath, cacheFileContent);
-      res.json({
-        code: 200,
-        message: 'Mock 配置保存成功',
-        data: processedList,
-        mockList: mockList,
-        rootDir: utils.rootDir,
-        dir: safeSavePath,
-        cache: safeSaveFileName + '.cache.json',
-        fileName: safeSaveFileName,
-      });
     } catch (error: any) {
       res.status(500).json({
         code: 500,
@@ -95,25 +57,19 @@ export default mockList;
   @Get('/_mock')
   get_mock(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query?.dir as string)?.trim() || utils.dir;
-      const saveFileName = (req.query?.fileName as string)?.trim() || utils.file;
-      const rootDir = (req.query?.rootDir as string)?.trim() || utils.rootDir;
-
-      // 读取 .cache.json 文件
-      const mockerDir = nodePath.join(rootDir, savePath);
-      const cacheFilePath = nodePath.join(mockerDir, saveFileName + '.cache.json');
-      if (fs.existsSync(cacheFilePath)) {
-        const cacheFileContent = fs.readFileSync(cacheFilePath, 'utf-8');
-        const cacheData = JSON.parse(cacheFileContent);
-        const mockList = cacheData.mockList || cacheData;
+      const savePath = (req.query?.dir as string)?.trim()
+      const saveFileName = (req.query?.fileName as string)?.trim()
+      const rootDir = (req.query?.rootDir as string)?.trim()
+      const mockData = getMcokFile(rootDir, savePath, saveFileName);
+      if (mockData?.mockList) {
         res.json({
           code: 200,
           message: '读取 Mock 配置成功',
-          data: mockList,
-          rootDir: rootDir,
-          dir: savePath,
-          cache: saveFileName + '.cache.json',
-          fileName: saveFileName,
+          data: mockData.mockList,
+          rootDir: mockData.rootDir,
+          dir: mockData.dir,
+          cache: mockData.cache,
+          fileName: mockData.fileName,
         });
       } else {
         res.json({
@@ -144,30 +100,19 @@ export default mockList;
   @Get('/_mock/_start')
   get_mock_start(req: express.Request, res: express.Response) {
     try {
-      const savePath = (req.query.dir as string)?.trim() || utils.dir;
-      const saveFileName = (req.query.fileName as string)?.trim() || utils.file;
-      const rootDir = (req.query.rootDir as string)?.trim() || utils.rootDir;
-      // 读取 .cache.json 文件
-      const mockerDir = nodePath.join(rootDir, savePath);
-      const cacheFilePath = nodePath.join(mockerDir, saveFileName + '.cache.json');
-      if (fs.existsSync(cacheFilePath)) {
-        const cacheFileContent = fs.readFileSync(cacheFilePath, 'utf-8');
-        const cacheData = JSON.parse(cacheFileContent);
-        const mockList = cacheData.mockList || cacheData;
-
-        this.router?.load(mockList);
-
+      const mockData = getMcokFile(req.query.rootDir as string, req.query.dir as string, req.query.fileName as string);
+      if (mockData?.mockList) {
+        this.router?.load(mockData.mockList);
         res.json({
           code: 200,
           message: '启动 Mock 配置服务成功',
-          data: mockList,
-          rootDir: rootDir,
-          dir: savePath,
-          cache: saveFileName + '.cache.json',
-          fileName: saveFileName,
+          data: mockData.mockList,
+          rootDir: mockData.rootDir,
+          dir: mockData.dir,
+          cache: mockData.cache,
+          fileName: mockData.fileName,
           isEnabled: true,
         });
-
       } else {
         res.json({
           code: 404,
@@ -208,4 +153,23 @@ export default mockList;
     }
   }
 
+  /**启动 Mock 配置服务*/
+  start = (rootDir?: string, dir?: string, fileName?: string) => {
+    try {
+      const mockData = getMcokFile(rootDir, dir, fileName);
+      if (mockData?.mockList) {
+        try {
+          this.router?.load(mockData.mockList);
+          console.log(chalk.green(`启动 Mock 配置服务成功，配置文件：${mockData.rootDir}/${mockData.dir}/${mockData.fileName}.ts`))
+          console.log('')
+        } catch (error) {
+          console.log(chalk.red(`启动 Mock 配置服务失败，配置文件：${mockData.rootDir}/${mockData.dir}/${mockData.fileName}.ts`))
+          console.log('')
+        }
+      }
+    } catch (error) {
+      console.log(chalk.red(`启动 Mock 配置服务失败`))
+      console.log('')
+    }
+  }
 }

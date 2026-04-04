@@ -30,11 +30,13 @@ export class FairysMockerBase {
   controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
 
   /**初始化 app 服务*/
-  initApp = (app: express.Express | connect.Server): express.Express | connect.Server => {
+  initApp = (app: express.Express | connect.Server, cb?: () => void): express.Express | connect.Server => {
     if (!this.app) {
-      this.mainApp = app
+      console.log('')
+      console.log(chalk.hex('#54FF9F')('===fairys-mocker================='))
+      console.log('')
 
-      console.log('初始化 app 服务')
+      this.mainApp = app
       this.app = express();
       // 挂子应用
       this.mainApp.use(this.app)
@@ -51,16 +53,27 @@ export class FairysMockerBase {
       const staticDir = nodePath.join(__dirname, '../public');
       if (fs.existsSync(staticDir)) {
         this.app.use(express.static(staticDir));
-        console.log(chalk.green(`静态文件服务：${staticDir}`))
+        // console.log(chalk.green(`静态文件服务：${staticDir}`))
+        // console.log('')
       }
 
       for (let index = 0; index < this.controller.length; index++) {
         const Controller = this.controller[index];
         const newController = new Controller();
         registerRoutes(newController)
+        // @ts-ignore
+        const start = newController?.start;
+        if (typeof start === 'function') {
+          start()
+        }
       }
-
       this.app.use('/', this.router);
+
+      cb?.()
+
+      console.log('')
+      console.log(chalk.hex('#54FF9F')('================================='))
+      console.log('')
 
     } else {
       console.log('挂载 主应用 服务')
