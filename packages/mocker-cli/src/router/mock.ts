@@ -18,7 +18,7 @@ export class MockRouter extends BaseRouter<MockerItem> {
       /**加载mock路由*/
       const method = mockItem.method.toLowerCase() as "all" | "get" | "post" | "put" | "delete" | "patch" | "options" | "head" | "options";
       const handler = (req: express.Request, res: express.Response) => {
-        console.log(chalk.blue(`  🦄 mock请求:` + '\t' + chalk.yellow(`${method}`) + "\t" + chalk.bold(`${mockItem.url}`)))
+        console.log(chalk.cyan(`  🦄 mock请求:` + '\t' + chalk.yellow(`${method}`) + "\t" + chalk.bold(`${mockItem.url}`)))
         try {
           const mockData = createMockItemData(mockItem);
           res.status(Number(mockData.status) || 200).json(mockData.body);
