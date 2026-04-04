@@ -29,6 +29,26 @@ export class FairysMockerBase {
   /**类*/
   controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
 
+  /**静态文件服务列表*/
+  staticServerList: string[] = [];
+
+  /**静态文件服务*/
+  staticServer = (dir: string, prefix: string = '/', isRegister: boolean = true) => {
+    if (!this.app) {
+      return;
+    }
+    if (fs.existsSync(dir)) {
+      const _prefix = /^\/$/.test(prefix) ? prefix : `/${prefix}`;
+      this.app.use(_prefix, express.static(dir));
+      // console.log(chalk.green(`静态文件服务：${dir}`))
+      if (isRegister) {
+        this.staticServerList.push(_prefix)
+      }
+    } else {
+      console.log(chalk.red(`${dir} 目录不存在`))
+    }
+  }
+
   /**初始化 app 服务*/
   initApp = (app: express.Express | connect.Server, cb?: () => void): express.Express | connect.Server => {
     if (!this.app) {
@@ -50,12 +70,8 @@ export class FairysMockerBase {
       this.router.use(this.fairysMockerRouter);
 
       // 静态文件服务
-      const staticDir = nodePath.join(__dirname, '../public');
-      if (fs.existsSync(staticDir)) {
-        this.app.use(express.static(staticDir));
-        // console.log(chalk.green(`静态文件服务：${staticDir}`))
-        // console.log('')
-      }
+      const staticDir = nodePath.join(__dirname, '../public/_fairys_mocker');
+      this.staticServer(staticDir, '/_fairys_mocker', false);
 
       for (let index = 0; index < this.controller.length; index++) {
         const Controller = this.controller[index];
@@ -71,8 +87,6 @@ export class FairysMockerBase {
 
       cb?.()
 
-      console.log('')
-      console.log(chalk.hex('#54FF9F')('================================='))
       console.log('')
 
     } else {
@@ -92,6 +106,11 @@ export class FairysMockerBase {
     console.log("")
     console.log(chalk.green(`\tfairys-mocker API地址:    http://localhost:${port}`));
     console.log(chalk.green(`\tfairys-mocker UI地址:     http://localhost:${port}/_fairys_mocker`));
+    console.log("")
+    for (let index = 0; index < this.staticServerList.length; index++) {
+      const element = this.staticServerList[index];
+      console.log(chalk.green(`\tfairys-mocker 静态服务 ${chalk.yellow(element)} 地址:     http://localhost:${port}${element}`));
+    }
     console.log("")
   }
 

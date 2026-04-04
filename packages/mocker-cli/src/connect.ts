@@ -7,8 +7,8 @@ import { detect } from 'detect-port';
 export class FairysMockerConnect {
   base = fairysMockerBase;
   /**创建 app*/
-  createApp = () => {
-    return fairysMockerBase.initApp(connect())
+  createApp = (cb?: () => void) => {
+    return fairysMockerBase.initApp(connect(), cb)
   }
 
   // 使用 connect
@@ -43,9 +43,11 @@ export class FairysMockerConnect {
     return fairysMockerBase.server
   }
 
+  staticServer = fairysMockerBase.staticServer;
+
   /**启动 app*/
-  start = () => {
-    this.createApp();
+  start = (cb?: () => void) => {
+    this.createApp(cb);
     this.listen();
   }
 

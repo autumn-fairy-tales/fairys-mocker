@@ -7,8 +7,8 @@ import { detect } from 'detect-port';
 export class FairysMockerExpress {
   base = fairysMockerBase;
   /**创建 app*/
-  createApp = () => {
-    return fairysMockerBase.initApp(express())
+  createApp = (cb?: () => void) => {
+    return fairysMockerBase.initApp(express(), cb)
   }
   // 使用express
   /**检测端口，返回实际端口*/
@@ -41,10 +41,10 @@ export class FairysMockerExpress {
     });
     return fairysMockerBase.server
   }
-
+  staticServer = fairysMockerBase.staticServer;
   /**启动 app*/
-  start = () => {
-    this.createApp();
+  start = (cb?: () => void) => {
+    this.createApp(cb);
     this.listen();
   }
 
