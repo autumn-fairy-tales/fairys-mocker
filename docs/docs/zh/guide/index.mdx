@@ -2,6 +2,34 @@
 
 fairys-mocker 是一个功能强大的 mock 数据生成和代理转发工具，帮助开发者快速搭建本地开发环境，模拟 API 响应，提高开发效率。
 
+## 项目架构
+
+fairys-mocker 由三个核心包组成：
+
+### 1. @fairys/create-mock-data
+- **功能**：提供 mock 数据生成和代理配置处理功能
+- **核心特性**：
+  - 支持 Mock.js 语法生成模拟数据
+  - 支持列表数据的批量生成
+  - 支持代理配置的转换和处理
+- **使用场景**：可单独用于生成 mock 数据，或作为其他包的依赖
+
+### 2. @fairys/mocker-cli
+- **功能**：提供命令行工具和服务启动功能
+- **核心特性**：
+  - 启动本地 mock 服务和代理服务
+  - 提供 RESTful API 接口管理服务
+  - 支持配置文件的保存和加载
+- **使用场景**：作为开发工具全局或本地安装使用
+
+### 3. @fairys/mocker-ui
+- **功能**：提供可视化配置界面
+- **核心特性**：
+  - 可视化配置 mock 数据
+  - 可视化配置代理规则
+  - 支持配置的保存和加载
+- **使用场景**：通过浏览器访问 UI 界面进行配置管理
+
 ## 核心功能
 
 ### 1. Mock 数据生成
@@ -9,6 +37,7 @@ fairys-mocker 是一个功能强大的 mock 数据生成和代理转发工具，
 - 可配置请求方法、状态码、延迟时间
 - 可自定义列表数据条数
 - 支持响应体的自定义编辑
+- 支持数组对象数据的批量生成
 
 ### 2. 代理转发
 - 支持 HTTP 请求代理
@@ -41,6 +70,12 @@ npm install -g @fairys/mocker-cli
 npm install @fairys/mocker-cli --save-dev
 ```
 
+### 单独安装 create-mock-data
+
+```bash
+npm install @fairys/create-mock-data --save
+```
+
 ## 使用方式
 
 ### 1. 启动服务
@@ -56,13 +91,19 @@ npx fairys-mocker
 服务启动后，会在终端显示 API 地址和 UI 地址：
 
 ```
-API地址:    http://localhost:6901
-UI地址:     http://localhost:6901/ui
+fairys-mocker API地址:    http://localhost:6901
+fairys-mocker UI地址:     http://localhost:6901/_fairys_mocker
 ```
+
+:::warning 注意事项
+
+端口默认为 6901，端口可能存在占用情况，请以控制台显示为准。
+
+:::
 
 ### 2. 使用 Web 界面
 
-1. 访问 UI 地址（默认为 http://localhost:6901/ui）
+1. 访问 UI 地址（默认为 http://localhost:6901/_fairys_mocker）
 2. 在 "Mocker 数据配置" 页面配置 mock 数据
 3. 在 "代理配置" 页面配置代理规则
 4. 点击 "启动服务" 按钮启用 mock 服务
@@ -87,7 +128,11 @@ POST /_fairys/_mock
         "code": 200,
         "data": {
           "id": "@id",
-          "name": "@name"
+          "name": "@name",
+          "_|list|10": {
+            "id": "@id",
+            "title": "@title"
+          }
         },
         "message": "success"
       },
@@ -159,11 +204,16 @@ GET /_fairys/_proxy/_start?dir=mock&fileName=proxy
 
 ## 技术栈
 
-- Node.js + Express
-- React + TypeScript
-- Mock.js
-- http-proxy-middleware
-- rspress (文档)
+- **后端**：Node.js + Express + Connect
+- **前端**：React 19 + TypeScript + Tailwind CSS
+- **核心依赖**：
+  - Mock.js（数据生成）
+  - http-proxy-middleware（代理转发）
+  - detect-port（端口检测）
+  - @uiw/react-textarea-code-editor（代码编辑器）
+  - @carefrees/valtio（状态管理）
+- **构建工具**：rsbuild
+- **文档**：rspress
 
 ## 贡献
 
