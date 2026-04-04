@@ -494,7 +494,7 @@ export default function ProxyConfig() {
           <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-lg shadow-xl p-4 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                编辑响应体数据 - 接口配置 #{currentIndex + 1}
+                编辑路径重写数据 - 接口配置 #{currentIndex + 1}
               </h2>
               <button
                 type="button"

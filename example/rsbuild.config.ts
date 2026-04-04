@@ -5,7 +5,7 @@ import { fairysMockerRsbuildPlugin } from '@fairys/mocker-cli';
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
   plugins: [
-    fairysMockerRsbuildPlugin(),
+    // fairysMockerRsbuildPlugin(),
     pluginReact(),
   ],
 

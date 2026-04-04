@@ -573,11 +573,6 @@ export default function MockerConfig() {
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  响应体格式 <span className="text-red-500">*</span>
-                </label>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                   生成数据条数
                 </label>
                 <input
