@@ -73,7 +73,7 @@ jobs:
     - name: Publish 🚀
       uses: SunLxy/npm-publish@main
       with:
-        token: ${{ secrets.NPM_TOKEN }}
+        # token: ${{ secrets.NPM_TOKEN }}
         workspaces: |
           packages/*
 
