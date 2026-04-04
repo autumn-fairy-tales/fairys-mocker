@@ -26,6 +26,7 @@
     "fairys-mocker": "bin/fairys-mocker"
   },
   "dependencies": {
+    "yargs-parser": "^22.0.0",
     "connect": "^3.7.0",
     "finalhandler": "^2.1.1",
     "http-proxy-middleware": "^3.0.5",
@@ -37,6 +38,7 @@
     "body-parser": "2.2.2"
   },
   "devDependencies": {
+    "@types/yargs-parser": "^21.0.3",
     "@types/finalhandler": "^1.2.4",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6"
