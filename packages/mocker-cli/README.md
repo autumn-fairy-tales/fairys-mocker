@@ -33,6 +33,14 @@ Options:
 - `FAIRYS_MOCKER_FILE`或者`file`：未设置时，取当前执行命令目录的`mock`文件夹下的`index.mock.cache.json`文件
 - `FAIRYS_MOCKER_PROXY_FILE`或者`file2`：未设置时，取当前执行命令目录的`mock`文件夹下的`proxy.cache.json`文件
 
+:::tip
+
+`file`和`file2`值为移除`.cache.json`的文件名，不是完整的文件名,
+
+例如`file=index.mock`, `file2=proxy` 内部会进行转换为 `index.mock.cache.json`、`index.mock.ts`、`proxy.cache.json`、`proxy.ts` 这4个文件名称
+
+:::
+
 在使用的过程中会生成4个文件
 
 1. `index.mock.cache.json`: 生成mock数据的原始配置(页面渲染取值)
