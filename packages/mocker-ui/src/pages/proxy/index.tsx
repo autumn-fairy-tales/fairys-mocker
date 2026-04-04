@@ -359,7 +359,7 @@ export default function ProxyConfig() {
                   return <input
                     type="text"
                     value={item.path}
-                    placeholder="请使用 ^ 开头"
+                    placeholder="请输入接口地址"
                     onChange={(e) => updateProxyItem(index, 'path', e.target.value)}
                     className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
                   />

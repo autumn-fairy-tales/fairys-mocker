@@ -36,8 +36,8 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
       }
       console.log(chalk.hex('#AF52DE')(chalk.bold(`  🍇 proxy代理启动:\t${chalk.yellow(protocol)}\t${proxyItem.path} ===> ${_target}\t`)))
       // 判断是否 ^ 开头
-      if (!proxyItem.path.startsWith('^')) {
-        _path = new RegExp('^' + proxyItem.path)
+      if (proxyItem.path.startsWith('^')) {
+        _path = new RegExp(proxyItem.path)
       }
       if (proxyItem.ws) {
         if (utilsGlobalVariable.isEnableWebsocket) {
