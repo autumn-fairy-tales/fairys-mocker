@@ -71,7 +71,7 @@ export default function ProxyConfig() {
       const res = await fetch(`${API_BASE_URL}/_fairys/_proxy/_destroy`).then(res => res.json());
       if (res.code === 200) {
         dispatch({ isEnabledStart: false })
-        _globalProxyInstance.open('success', '销毁 Proxy 服务成功')
+        _globalProxyInstance.open('success', res.message || '销毁 Proxy 服务成功')
       } else {
         _globalProxyInstance.open('error', res.message || '销毁 Proxy 服务失败')
       }
@@ -85,7 +85,7 @@ export default function ProxyConfig() {
     try {
       const res = await fetch(`${API_BASE_URL}/_fairys/_proxy/_start`).then(res => res.json());
       if (res.code === 200) {
-        _globalProxyInstance.open('success', '加载 Proxy 服务成功')
+        _globalProxyInstance.open('success', res.message || '加载 Proxy 服务成功')
         dispatch({ isEnabledStart: true })
       } else {
         _globalProxyInstance.open('error', res.message || '加载 Proxy 服务失败')

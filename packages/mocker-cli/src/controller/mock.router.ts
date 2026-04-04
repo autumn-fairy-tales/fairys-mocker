@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'node:fs';
 import { Get, Post, Controller } from "../utils/decorator.js"
-import { utils } from "../utils/index.js"
+import { utilsGlobalVariable } from "../utils/index.js"
 import { MockRouter } from "../router/mock.js"
 import { BaseController } from "./base.js"
 import { getMcokFile, createMockFile } from '../utils/mcok.proxy.js';
@@ -23,9 +23,9 @@ export class MockRouterController extends BaseController {
     // 定义接口
     try {
       const { mockList, dir, fileName = 'index.mock', rootDir } = req.body;
-      let _rootDir = rootDir || utils.rootDir;
+      let _rootDir = rootDir || utilsGlobalVariable.rootDir;
       if (rootDir && !fs.existsSync(rootDir)) {
-        _rootDir = utils.rootDir;
+        _rootDir = utilsGlobalVariable.rootDir;
       }
       const mockData = createMockFile(mockList, _rootDir, dir, fileName)
       if (mockData?.mockConfig) {

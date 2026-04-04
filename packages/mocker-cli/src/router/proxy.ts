@@ -4,6 +4,7 @@ import { BaseRouter } from "./base.js"
 import { createProxyMiddleware, RequestHandler } from "http-proxy-middleware"
 import chalk from "chalk"
 import { fairysMockerBase } from "../base.js"
+import { utilsGlobalVariable } from "../utils/utils.js"
 
 /**代理 路由器实例*/
 export class ProxyRouter extends BaseRouter<ProxyItem> {
@@ -39,18 +40,21 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
         _path = new RegExp('^' + proxyItem.path)
       }
       if (proxyItem.ws) {
-        const wsProxy = createProxyMiddleware({
-          target: proxyItem.target,
-          pathRewrite: proxyItem.pathRewrite,
-          ws: proxyItem.ws,
-          changeOrigin: true,
-        })
-        _that.wsProxyList.push(wsProxy)
-        router.all(_path, wsProxy)
-        // 这个地方有个问题，如果在 rsbuild 中使用，websocket 会有问题
-        if (fairysMockerBase.server) {
-          // 升级 WebSocket 处理
-          fairysMockerBase.server?.on('upgrade', wsProxy.upgrade)
+        if (utilsGlobalVariable.isEnableWebsocket) {
+          const wsProxy = createProxyMiddleware({
+            target: proxyItem.target,
+            pathRewrite: proxyItem.pathRewrite,
+            ws: proxyItem.ws,
+            changeOrigin: true,
+          })
+          _that.wsProxyList.push(wsProxy)
+          router.all(_path, wsProxy)
+          if (fairysMockerBase.server) {
+            // 升级 WebSocket 处理
+            fairysMockerBase.server?.on('upgrade', wsProxy.upgrade)
+          }
+        } else {
+          console.log(chalk.red(`rsbuild/vite等自带websocket服务的环境下无法代理websocket服务：${proxyItem.path}`))
         }
       } else {
         // 这个不生效问题

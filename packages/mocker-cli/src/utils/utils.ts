@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import fs from 'node:fs';
 import path from "node:path"
 
-class Utils {
+class UtilsGlobalVariable {
   /**根目录*/
   public rootDir = process.cwd();
   /**目录名*/
@@ -16,6 +16,8 @@ class Utils {
   public isCreateMockDataFile = true;
   /**是否生成proxy数据文件*/
   public isCreateProxyDataFile = true;
+  /**是否可以启用 websocket 服务(在rsbuild/vite等自带websocket服务的环境下无法使用)*/
+  public isEnableWebsocket: boolean = true;
 
   /**设置根目录*/
   setRootDir = (value?: string) => {
@@ -59,7 +61,6 @@ class Utils {
       this.isCreateProxyDataFile = fig
     }
   }
-
 }
 
-export const utils = new Utils()
+export const utilsGlobalVariable = new UtilsGlobalVariable()

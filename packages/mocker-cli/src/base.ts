@@ -28,7 +28,6 @@ export class FairysMockerBase {
   mainApp: express.Express | connect.Server | undefined = undefined;
   /**类*/
   controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
-
   /**静态文件服务列表*/
   staticServerList: string[] = [];
 

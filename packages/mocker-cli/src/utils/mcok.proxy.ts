@@ -2,13 +2,13 @@
 /**保存配置和读取配置*/
 import nodePath from "node:path"
 import fs from 'node:fs';
-import { utils } from "./utils.js";
+import { utilsGlobalVariable } from "./utils.js";
 import { createProxyData, createMockData, ProxyList, DefineMockList } from "@fairys/create-mock-data";
 
 export const getProxyFile = (rootDir?: string, dir?: string, fileName?: string) => {
-  const _rootDir = rootDir?.trim() || utils.rootDir;
-  const _dir = dir?.trim() || utils.dir;
-  const _fileName = fileName?.trim() || utils.proxyFile;
+  const _rootDir = rootDir?.trim() || utilsGlobalVariable.rootDir;
+  const _dir = dir?.trim() || utilsGlobalVariable.dir;
+  const _fileName = fileName?.trim() || utilsGlobalVariable.proxyFile;
   // 读取 .cache.json 文件
   const proxyDir = nodePath.join(_rootDir, _dir);
   const cacheFilePath = nodePath.join(proxyDir, _fileName + '.cache.json');
@@ -28,9 +28,9 @@ export const getProxyFile = (rootDir?: string, dir?: string, fileName?: string) 
 }
 
 export const createProxyFile = (proxyList: ProxyList, rootDir?: string, dir?: string, fileName?: string) => {
-  const _rootDir = rootDir?.trim() || utils.rootDir;
-  const _dir = dir?.trim() || utils.dir;
-  const _fileName = fileName?.trim() || utils.proxyFile;
+  const _rootDir = rootDir?.trim() || utilsGlobalVariable.rootDir;
+  const _dir = dir?.trim() || utilsGlobalVariable.dir;
+  const _fileName = fileName?.trim() || utilsGlobalVariable.proxyFile;
   // 读取 .cache.json 文件
   const proxyDir = nodePath.join(_rootDir, _dir);
 
@@ -38,7 +38,7 @@ export const createProxyFile = (proxyList: ProxyList, rootDir?: string, dir?: st
     fs.mkdirSync(proxyDir, { recursive: true });
   }
   const proxyConfig = createProxyData(proxyList)
-  if (utils.isCreateProxyDataFile) {
+  if (utilsGlobalVariable.isCreateProxyDataFile) {
     const proxyFilePath = nodePath.join(proxyDir, `${_fileName}.ts`);
     const proxyFileContent = `// 代理配置文件
 // 自动生成于 ${new Date().toISOString()}
@@ -82,9 +82,9 @@ export default proxyConfig;
 }
 
 export const getMcokFile = (rootDir?: string, dir?: string, fileName?: string) => {
-  const _rootDir = rootDir?.trim() || utils.rootDir;
-  const _dir = dir?.trim() || utils.dir;
-  const _fileName = fileName?.trim() || utils.file;
+  const _rootDir = rootDir?.trim() || utilsGlobalVariable.rootDir;
+  const _dir = dir?.trim() || utilsGlobalVariable.dir;
+  const _fileName = fileName?.trim() || utilsGlobalVariable.file;
   // 读取 .cache.json 文件
   const mockDir = nodePath.join(_rootDir, _dir);
   const cacheFilePath = nodePath.join(mockDir, _fileName + '.cache.json');
@@ -104,9 +104,9 @@ export const getMcokFile = (rootDir?: string, dir?: string, fileName?: string) =
 }
 
 export const createMockFile = (mockList: DefineMockList, rootDir?: string, dir?: string, fileName?: string) => {
-  const _rootDir = rootDir?.trim() || utils.rootDir;
-  const _dir = dir?.trim() || utils.dir;
-  const _fileName = fileName?.trim() || utils.file;
+  const _rootDir = rootDir?.trim() || utilsGlobalVariable.rootDir;
+  const _dir = dir?.trim() || utilsGlobalVariable.dir;
+  const _fileName = fileName?.trim() || utilsGlobalVariable.file;
   // 读取 .cache.json 文件
   const mockDir = nodePath.join(_rootDir, _dir);
 
@@ -114,7 +114,7 @@ export const createMockFile = (mockList: DefineMockList, rootDir?: string, dir?:
     fs.mkdirSync(mockDir, { recursive: true });
   }
   const mockConfig = createMockData(mockList)
-  if (utils.isCreateMockDataFile) {
+  if (utilsGlobalVariable.isCreateMockDataFile) {
     const mockFilePath = nodePath.join(mockDir, `${_fileName}.ts`);
     const mockFileContent = `// Mock 配置文件
 // 自动生成于 ${new Date().toISOString()}

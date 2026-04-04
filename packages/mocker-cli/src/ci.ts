@@ -1,7 +1,7 @@
 import parser, { Arguments } from 'yargs-parser'
 import { fairysMockerExpress, FairysMockerExpress } from "./main.js"
 import { fairysMockerConnect, FairysMockerConnect } from "./connect.js"
-import { utils } from "./utils/utils.js"
+import { utilsGlobalVariable } from "./utils/utils.js"
 
 function help() {
   console.log('\n  Usage: \x1b[34;1fairys-mocker\x1b[0m [--help|h|--root|--dir|--file|--file2|--static|--static-prefix|--is-mock-file|--is-proxy-file]');
@@ -32,12 +32,12 @@ export const CI = (app: FairysMockerExpress | FairysMockerConnect) => {
     help();
     return;
   } else {
-    utils.setRootDir(argv.root);
-    utils.setDir(argv.dir);
-    utils.setFile(argv.file);
-    utils.setProxyFile(argv.file2);
-    utils.setIsCreateMockDataFile(argv['is-mock-file'])
-    utils.setIsCreateProxyDataFile(argv['is-proxy-file'])
+    utilsGlobalVariable.setRootDir(argv.root);
+    utilsGlobalVariable.setDir(argv.dir);
+    utilsGlobalVariable.setFile(argv.file);
+    utilsGlobalVariable.setProxyFile(argv.file2);
+    utilsGlobalVariable.setIsCreateMockDataFile(argv['is-mock-file'])
+    utilsGlobalVariable.setIsCreateProxyDataFile(argv['is-proxy-file'])
     // 1. 直接当 mock 服务，
     // 2. 生成 mock 数据
     // 3. mock 服务 + 数据

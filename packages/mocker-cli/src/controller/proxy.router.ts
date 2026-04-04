@@ -1,9 +1,7 @@
 import express from 'express';
 import fs from 'node:fs';
-import nodePath from "node:path"
-import { createProxyData } from '@fairys/create-mock-data';
 import { Get, Post, Controller } from "../utils/decorator.js"
-import { utils } from "../utils/index.js"
+import { utilsGlobalVariable } from "../utils/utils.js"
 import { ProxyRouter } from '../router/proxy.js';
 import { BaseController } from './base.js';
 import { getProxyFile, createProxyFile } from '../utils/mcok.proxy.js';
@@ -24,9 +22,9 @@ export class ProxyRouterController extends BaseController {
   post_proxy(req: express.Request, res: express.Response) {
     try {
       const { proxyList, dir, fileName = 'proxy', rootDir } = req.body;
-      let _rootDir = rootDir || utils.rootDir;
+      let _rootDir = rootDir || utilsGlobalVariable.rootDir;
       if (rootDir && !fs.existsSync(rootDir)) {
-        _rootDir = utils.rootDir;
+        _rootDir = utilsGlobalVariable.rootDir;
       }
       const proxyData = createProxyFile(proxyList, _rootDir, dir, fileName)
       if (proxyData?.proxyConfig) {
@@ -110,9 +108,10 @@ export class ProxyRouterController extends BaseController {
       const proxyData = getProxyFile(rootDir, savePath, saveFileName);
       if (proxyData?.proxyList) {
         this.router?.load(proxyData.proxyList);
+        const msg = utilsGlobalVariable.isEnableWebsocket ? '启动代理服务成功' : '非websocket服务代理启动成功'
         res.json({
           code: 200,
-          message: '启动代理服务成功',
+          message: msg,
           data: proxyData.proxyList,
           rootDir: rootDir,
           dir: proxyData.dir,
