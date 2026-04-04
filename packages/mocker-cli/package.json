@@ -1,6 +1,6 @@
 {
   "name": "@fairys/mocker-cli",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Fairys Mocker CLI for mock data generation",
   "author": "SunLxy <1011771396@qq.com>",
   "homepage": "https://github.com/autumn-fairy-tales/fairys-mocker",
@@ -26,22 +26,22 @@
     "fairys-mocker": "bin/fairys-mocker"
   },
   "dependencies": {
-    "yargs-parser": "^22.0.0",
+    "@fairys/create-mock-data": "^0.0.1",
+    "body-parser": "2.2.2",
+    "chalk": "^5.6.2",
     "connect": "^3.7.0",
-    "finalhandler": "^2.1.1",
-    "http-proxy-middleware": "^3.0.5",
-    "@fairys/create-mock-data": "^0.0.0",
+    "cors": "^2.8.5",
     "detect-port": "^2.1.0",
     "express": "^5.2.1",
-    "cors": "^2.8.5",
-    "chalk": "^5.6.2",
-    "body-parser": "2.2.2"
+    "finalhandler": "^2.1.1",
+    "http-proxy-middleware": "^3.0.5",
+    "yargs-parser": "^22.0.0"
   },
   "devDependencies": {
-    "@types/yargs-parser": "^21.0.3",
-    "@types/finalhandler": "^1.2.4",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6"
+    "@types/express": "^5.0.6",
+    "@types/finalhandler": "^1.2.4",
+    "@types/yargs-parser": "^21.0.3"
   },
   "files": [
     "bin",

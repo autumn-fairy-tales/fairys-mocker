@@ -1,6 +1,6 @@
 {
   "name": "@fairys/mocker-ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,17 +11,17 @@
     "preview": "rsbuild preview"
   },
   "dependencies": {
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "@fairys/create-mock-data": "^0.0.0",
     "@carefrees/valtio": "^0.0.16",
-    "@uiw/react-textarea-code-editor": "~3.1.1"
+    "@fairys/create-mock-data": "^0.0.1",
+    "@uiw/react-textarea-code-editor": "~3.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@types/mockjs": "^1.0.10",
     "@rsbuild/core": "^1.7.1",
     "@rsbuild/plugin-react": "^1.4.2",
     "@tailwindcss/postcss": "^4.2.2",
+    "@types/mockjs": "^1.0.10",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "tailwindcss": "^4.2.2",

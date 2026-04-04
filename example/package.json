@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@fairys/mocker-cli": "^0.0.0",
+    "@fairys/mocker-cli": "^0.0.1",
     "@rsbuild/core": "^1.7.1",
     "@rsbuild/plugin-react": "^1.4.2",
     "@types/react": "^18.3.18",
