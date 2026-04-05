@@ -18,19 +18,19 @@ const __dirname = nodePath.dirname(__filename);
 
 export interface FairysMockerBaseCallBackOptions {
   /**注册路由之前*/
-  beforeRouter?: () => void;
+  beforeRouter?: (app: express.Express, mainApp: express.Express | connect.Server, instance: FairysMockerBase) => void;
   /**注册路由之后*/
-  afterRouter?: () => void;
+  afterRouter?: (app: express.Express, mainApp: express.Express | connect.Server, instance: FairysMockerBase) => void;
   /**注册静态文件服务之前*/
-  beforeStaticServer?: () => void;
+  beforeStaticServer?: (app: express.Express, mainApp: express.Express | connect.Server, instance: FairysMockerBase) => void;
   /**注册静态文件服务之后*/
-  afterStaticServer?: () => void;
+  afterStaticServer?: (app: express.Express, mainApp: express.Express | connect.Server, instance: FairysMockerBase) => void;
   /**注册mock和代理路由接口之前*/
-  beforeRegisterMockProxyRoutes?: () => void;
+  beforeRegisterMockProxyRoutes?: (app: express.Express, mainApp: express.Express | connect.Server, instance: FairysMockerBase) => void;
   /**注册mock和代理路由接口之后*/
-  afterRegisterMockProxyRoutes?: () => void;
+  afterRegisterMockProxyRoutes?: (app: express.Express, mainApp: express.Express | connect.Server, instance: FairysMockerBase) => void;
   /**最后*/
-  last?: () => void;
+  last?: (app: express.Express, mainApp: express.Express | connect.Server, instance: FairysMockerBase) => void;
 }
 
 export class FairysMockerBase {
@@ -84,7 +84,7 @@ export class FairysMockerBase {
       this.app.use(express.json());
       this.app.use(cors());
 
-      options?.beforeRouter?.()
+      options?.beforeRouter?.(this.app, this.mainApp, this)
 
       /**注册主路由*/
       this.router = express.Router();
@@ -92,16 +92,16 @@ export class FairysMockerBase {
       this.fairysMockerRouter = express.Router();
       this.router.use(this.fairysMockerRouter);
 
-      options?.afterRouter?.()
+      options?.afterRouter?.(this.app, this.mainApp, this)
 
-      options?.beforeStaticServer?.()
+      options?.beforeStaticServer?.(this.app, this.mainApp, this)
 
       // 静态文件服务
       const staticDir = nodePath.join(__dirname, '../public/_fairys_mocker');
       this.staticServer(staticDir, '/_fairys_mocker', false);
 
-      options?.afterStaticServer?.()
-      options?.beforeRegisterMockProxyRoutes?.()
+      options?.afterStaticServer?.(this.app, this.mainApp, this)
+      options?.beforeRegisterMockProxyRoutes?.(this.app, this.mainApp, this)
 
       for (let index = 0; index < this.controller.length; index++) {
         const Controller = this.controller[index];
@@ -114,11 +114,11 @@ export class FairysMockerBase {
         }
       }
 
-      options?.afterRegisterMockProxyRoutes?.()
+      options?.afterRegisterMockProxyRoutes?.(this.app, this.mainApp, this)
 
       this.app.use('/', this.router);
 
-      options?.last?.()
+      options?.last?.(this.app, this.mainApp, this)
 
       console.log('')
 
