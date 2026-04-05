@@ -21,7 +21,13 @@ export class MockRouter extends BaseRouter<MockerItem> {
         console.log(chalk.cyan(`  🦄 mock请求:` + '\t' + chalk.yellow(`${method}`) + "\t" + chalk.bold(`${mockItem.url}`)))
         try {
           const mockData = createMockItemData(mockItem);
-          res.status(Number(mockData.status) || 200).json(mockData.body);
+          if (mockData.delay) {
+            setTimeout(() => {
+              res.status(Number(mockData.status) || 200).json(mockData.body);
+            }, mockData.delay);
+          } else {
+            res.status(Number(mockData.status) || 200).json(mockData.body);
+          }
         } catch (error) {
           res.status(500).json({
             code: 500,
