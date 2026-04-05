@@ -108,10 +108,9 @@ export class ProxyRouterController extends BaseController {
       const proxyData = getProxyFile(rootDir, savePath, saveFileName);
       if (proxyData?.proxyList) {
         this.router?.load(proxyData.proxyList);
-        const msg = utilsGlobalVariable.isEnableWebsocket ? '启动代理服务成功' : '非websocket服务代理启动成功'
         res.json({
           code: 200,
-          message: msg,
+          message: '启动代理服务成功',
           data: proxyData.proxyList,
           rootDir: rootDir,
           dir: proxyData.dir,

@@ -4,7 +4,6 @@ import { BaseRouter } from "./base.js"
 import { createProxyMiddleware, RequestHandler } from "http-proxy-middleware"
 import chalk from "chalk"
 import { fairysMockerBase } from "../base.js"
-import { utilsGlobalVariable } from "../utils/utils.js"
 
 /**代理 路由器实例*/
 export class ProxyRouter extends BaseRouter<ProxyItem> {
@@ -23,7 +22,7 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
       const proxyItem = proxyList[index];
       let protocol = 'http';
       let _target = proxyItem.target
-      let _path = new RegExp(proxyItem.path)
+      let _path: string | RegExp | undefined = proxyItem.path
 
       if (/^(http:|https:|ws:|wss:)/.test(proxyItem.target)) {
         const [_protocol] = proxyItem.target.split(":")
@@ -34,35 +33,34 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
         const [_protocol, ...rest] = proxyItem.target.split(":")
         _target = [protocol, ...rest].join(":")
       }
+
       console.log(chalk.hex('#AF52DE')(chalk.bold(`  🍇 proxy代理启动:\t${chalk.yellow(protocol)}\t${proxyItem.path} ===> ${_target}\t`)))
+
       // 判断是否 ^ 开头
       if (proxyItem.path.startsWith('^')) {
         _path = new RegExp(proxyItem.path)
       }
       if (proxyItem.ws) {
-        if (utilsGlobalVariable.isEnableWebsocket) {
-          const wsProxy = createProxyMiddleware({
-            target: proxyItem.target,
-            pathRewrite: proxyItem.pathRewrite,
-            ws: proxyItem.ws,
-            changeOrigin: true,
-          })
-          _that.wsProxyList.push(wsProxy)
-          router.all(_path, wsProxy)
-          if (fairysMockerBase.server) {
-            // 升级 WebSocket 处理
-            fairysMockerBase.server?.on('upgrade', wsProxy.upgrade)
-          }
-        } else {
-          console.log(chalk.red(`rsbuild/vite等自带websocket服务的环境下无法代理websocket服务：${proxyItem.path}`))
+        const wsProxy = createProxyMiddleware({
+          target: proxyItem.target,
+          pathRewrite: proxyItem.pathRewrite,
+          ws: proxyItem.ws,
+          changeOrigin: true,
+          pathFilter: proxyItem.path,
+        })
+        _that.wsProxyList.push(wsProxy)
+        router.use(wsProxy)
+        if (fairysMockerBase.server) {
+          // 升级 WebSocket 处理
+          fairysMockerBase.server?.on('upgrade', wsProxy.upgrade)
         }
       } else {
-        // 这个不生效问题
         router.all(_path, createProxyMiddleware({
           target: proxyItem.target,
           pathRewrite: proxyItem.pathRewrite,
           ws: proxyItem.ws,
           changeOrigin: true,
+          pathFilter: proxyItem.path,
         }))
       }
     }

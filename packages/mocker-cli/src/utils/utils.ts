@@ -10,7 +10,6 @@ export interface UtilsGlobalVariableOptions {
   proxyFile?: string;
   isCreateMockDataFile?: boolean;
   isCreateProxyDataFile?: boolean;
-  isEnableWebsocket?: boolean;
 }
 
 class UtilsGlobalVariable {
@@ -26,8 +25,6 @@ class UtilsGlobalVariable {
   public isCreateMockDataFile = true;
   /**是否生成proxy数据文件*/
   public isCreateProxyDataFile = true;
-  /**是否可以启用 websocket 服务(在rsbuild/vite等自带websocket服务的环境下无法使用)*/
-  public isEnableWebsocket: boolean = true;
 
   /**设置根目录*/
   setRootDir = (value?: string) => {
@@ -79,9 +76,6 @@ class UtilsGlobalVariable {
     this.setProxyFile(options.proxyFile);
     this.setIsCreateMockDataFile(options.isCreateMockDataFile);
     this.setIsCreateProxyDataFile(options.isCreateProxyDataFile);
-    if (typeof options.isEnableWebsocket === "boolean") {
-      this.isEnableWebsocket = options.isEnableWebsocket;
-    }
   }
 
 }
