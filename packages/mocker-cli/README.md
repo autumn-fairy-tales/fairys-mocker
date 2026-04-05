@@ -21,9 +21,9 @@ Options:
   --file2           设置文件名2(默认取环境变量中的`FAIRYS_MOCKER_PROXY_FILE`)
   --static          设置静态文件目录
   --static-prefix   设置静态文件路径前缀
-  --is-mock-file    是否生成mock数据文件,默认生成.
-  --is-proxy-file   是否生成proxy数据文件,默认生成.
-  --is-connect      是否是connect服务.默认express.
+  --is-mock-file    是否生成mock数据文件,默认:true.
+  --is-proxy-file   是否生成proxy数据文件,默认:true.
+  --is-connect      是否是connect服务.默认:false，默认使用`express`服务.
 
 Example:
 
