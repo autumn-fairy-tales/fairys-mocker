@@ -8,7 +8,7 @@
     "dev2": "rsbuild dev --open",
     "dev": "node ./server.mjs",
     "preview": "rsbuild preview",
-    "mock": "fairys-mocker --dir mock2 --static-prefix /static"
+    "mock": "fairys-mocker --dir mock2 --static-prefix /static "
   },
   "dependencies": {
     "react": "^18.3.1",

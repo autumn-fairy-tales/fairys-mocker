@@ -24,6 +24,11 @@ Options:
   --is-mock-file    是否生成mock数据文件,默认生成.
   --is-proxy-file   是否生成proxy数据文件,默认生成.
   --is-connect      是否是connect服务.默认express.
+
+Example:
+
+  fairys-mocker --dir mocker --file index.mock --file2 proxy --is-connect true
+
 ```
 
 **参数说明**
