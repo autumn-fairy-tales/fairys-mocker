@@ -1,5 +1,5 @@
 export * from "./base.js"
-export * from "./main.js"
+export * from "./express.js"
 export * from "./connect.js"
 export * from "./ci.js"
 export * from "./plugins/rsbuild.js"

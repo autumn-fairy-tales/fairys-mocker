@@ -11,7 +11,6 @@ export const fairysMockerRsbuildPlugin = (options: FairysMockerRsbuildPluginOpti
     api.onBeforeStartDevServer(({ server }) => {
       utilsGlobalVariable.setOptions(options);
       fairysMockerBase.initApp(server.middlewares, {
-
         last() {
           fairysMockerBase.logServer(server.port);
         },

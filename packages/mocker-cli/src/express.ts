@@ -27,7 +27,7 @@ export class FairysMockerExpress {
   }
 
   /**启动服务器*/
-  listen = async (port?: number, callback?: (error?: Error) => void) => {
+  listen = async (port?: number, callback?: (error?: Error) => void, isLog: boolean = true) => {
     if (!fairysMockerBase.app) {
       console.log(chalk.red('请先初始化 app'));
       return;
@@ -36,12 +36,16 @@ export class FairysMockerExpress {
     const realPort = await this.detectPort(port);
     // @ts-ignore
     fairysMockerBase.server = app.listen(realPort, (...rest) => {
-      fairysMockerBase.logServer(realPort as number);
+      if (isLog) {
+        fairysMockerBase.logServer(realPort as number);
+      }
       callback?.(...rest);
     });
     return fairysMockerBase.server
   }
+
   staticServer = fairysMockerBase.staticServer;
+
   /**启动 app*/
   start = (options?: FairysMockerBaseCallBackOptions) => {
     this.createApp(options);

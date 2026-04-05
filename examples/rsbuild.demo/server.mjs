@@ -54,7 +54,6 @@ export async function startDevServer() {
 
   // Apply Rsbuild’s built-in middlewares
   app.use(rsbuildServer.middlewares);
-
   const httpServer = await fairysMockerExpress.listen(rsbuildServer.port, () => {
     // Notify Rsbuild that the custom server has started
     rsbuildServer.afterListen();

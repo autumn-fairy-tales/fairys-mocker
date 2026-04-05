@@ -59,13 +59,19 @@ export class FairysMockerBase {
       if (!/^\//.test(prefix)) {
         _prefix = "/" + prefix
       }
-      this.app.use(_prefix, express.static(dir));
-      // console.log(chalk.green(`静态文件服务：${_prefix}\t${dir}`))
-      if (isRegister) {
-        this.staticServerList.push(_prefix)
+      let _newDir = nodePath.resolve(dir);
+      // 判断目录是否存在
+      if (fs.existsSync(_newDir)) {
+        this.app.use(_prefix, express.static(dir));
+        // console.log(chalk.green(`静态文件服务：${_prefix}\t${dir}`))
+        if (isRegister) {
+          this.staticServerList.push(_prefix)
+        }
+      } else {
+        console.log(chalk.red(`静态文件服务加载失败：${dir} 目录不存在`))
       }
     } else {
-      console.log(chalk.red(`${dir} 目录不存在`))
+      console.log(chalk.red(`静态文件服务加载失败：${dir} 目录不存在`))
     }
   }
 
@@ -93,7 +99,6 @@ export class FairysMockerBase {
       this.router.use(this.fairysMockerRouter);
 
       options?.afterRouter?.(this.app, this.mainApp, this)
-
       options?.beforeStaticServer?.(this.app, this.mainApp, this)
 
       // 静态文件服务

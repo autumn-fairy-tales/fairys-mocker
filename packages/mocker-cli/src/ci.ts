@@ -1,5 +1,5 @@
 import parser, { Arguments } from 'yargs-parser'
-import { fairysMockerExpress, FairysMockerExpress } from "./main.js"
+import { fairysMockerExpress, FairysMockerExpress } from "./express.js"
 import { fairysMockerConnect, FairysMockerConnect } from "./connect.js"
 import { utilsGlobalVariable } from "./utils/utils.js"
 
