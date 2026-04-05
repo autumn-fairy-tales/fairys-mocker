@@ -76,15 +76,15 @@ export function registerRoutes(instance: unknown) {
     /**获取方法名*/
     const controllerMethod = controllerMethods[index];
     /**方法*/
-    const _requestHandle: (req: express.Request, res: express.Response,) => void = proto[controllerMethod];
-    const boundRequestHandle: (req: express.Request, res: express.Response) => void = _requestHandle.bind(instance);
+    const _requestHandle: (req: express.Request, res: express.Response, next: express.NextFunction) => void = proto[controllerMethod];
+    const boundRequestHandle: (req: express.Request, res: express.Response, next: express.NextFunction) => void = _requestHandle.bind(instance);
     /**获取当前方法配置*/
     const routeItem = routesMap.get(_requestHandle);
     if (routeItem) {
       /**拼接前缀*/
       const fullPath = (controllerAPIRootPath?.prefix || '') + routeItem.path;
       /**方法*/
-      fairysRouter[routeItem.method](fullPath, (req, res) => boundRequestHandle(req, res));
+      fairysRouter[routeItem.method](fullPath, (req, res, next) => boundRequestHandle(req, res, next));
     }
   }
 }
