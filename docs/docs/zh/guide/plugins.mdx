@@ -9,6 +9,25 @@ import { fairysMockerRsbuildPlugin } from '@fairys/mocker-cli'
 
 ```
 
+**参数**
+
+```ts
+export interface FairysMockerRsbuildPluginOptions {
+  /**根目录*/
+  root?: string;
+  /**目录名*/
+  dir?: string;
+  /**文件名*/
+  file?: string;
+  /**代理文件名*/
+  proxyFile?: string;
+  /**是否生成mock数据文件*/
+  isCreateMockDataFile?: boolean;
+  /**是否生成proxy数据文件*/
+  isCreateProxyDataFile?: boolean;
+}
+```
+
 ### 使用
 
 ```ts
@@ -62,4 +81,45 @@ export async function startDevServer() {
 }
 
 startDevServer();
+```
+
+## vite 插件
+
+```ts
+import { fairysMockerVitePlugin } from '@fairys/mocker-cli'
+
+```
+
+**参数**
+
+```ts
+export interface FairysMockerVitePluginOptions {
+  /**根目录*/
+  root?: string;
+  /**目录名*/
+  dir?: string;
+  /**文件名*/
+  file?: string;
+  /**代理文件名*/
+  proxyFile?: string;
+  /**是否生成mock数据文件*/
+  isCreateMockDataFile?: boolean;
+  /**是否生成proxy数据文件*/
+  isCreateProxyDataFile?: boolean;
+}
+```
+
+### 使用
+
+```ts
+
+import { defineConfig, } from '@rsbuild/core';
+import { fairysMockerVitePlugin } from '@fairys/mocker-cli';
+
+export default defineConfig({
+  plugins: [
+    fairysMockerVitePlugin(),
+  ],
+});
+
 ```

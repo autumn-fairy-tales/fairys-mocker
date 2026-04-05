@@ -160,12 +160,15 @@ export class MockRouterController extends BaseController {
       if (mockData?.mockList) {
         try {
           this.router?.load(mockData.mockList);
-          console.log(chalk.green(`  启动 Mock 配置服务成功，配置文件：${mockData.rootDir}/${mockData.dir}/${mockData.fileName}.ts`))
+          console.log(chalk.green(`  启动 Mock 配置服务成功，配置文件：${mockData.rootDir}/${mockData.dir}/${mockData.fileName}.cache.json`))
           console.log('')
         } catch (error) {
-          console.log(chalk.red(`  启动 Mock 配置服务失败，配置文件：${mockData.rootDir}/${mockData.dir}/${mockData.fileName}.ts`))
+          console.log(chalk.red(`  启动 Mock 配置服务失败，配置文件：${mockData.rootDir}/${mockData.dir}/${mockData.fileName}.cache.json`))
           console.log('')
         }
+      } else {
+        console.log(chalk.yellow(`  已启动 Mock 配置服务`))
+        console.log('')
       }
     } catch (error) {
       console.log(chalk.red(`  启动 Mock 配置服务失败`))

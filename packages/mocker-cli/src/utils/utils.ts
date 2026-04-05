@@ -4,11 +4,17 @@ import fs from 'node:fs';
 import path from "node:path"
 
 export interface UtilsGlobalVariableOptions {
+  /**根目录*/
   root?: string;
+  /**目录名*/
   dir?: string;
+  /**文件名*/
   file?: string;
+  /**代理文件名*/
   proxyFile?: string;
+  /**是否生成mock数据文件*/
   isCreateMockDataFile?: boolean;
+  /**是否生成proxy数据文件*/
   isCreateProxyDataFile?: boolean;
 }
 

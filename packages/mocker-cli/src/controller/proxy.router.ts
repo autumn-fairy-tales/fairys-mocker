@@ -164,12 +164,15 @@ export class ProxyRouterController extends BaseController {
       if (proxyData?.proxyList) {
         try {
           this.router?.load(proxyData.proxyList);
-          console.log(chalk.green(`  启动代理服务成功，配置文件：${proxyData.rootDir}/${proxyData.dir}/${proxyData.fileName}.ts`))
+          console.log(chalk.green(`  启动代理服务成功，配置文件：${proxyData.rootDir}/${proxyData.dir}/${proxyData.fileName}.cache.json`))
           console.log('')
         } catch (error) {
-          console.log(chalk.red(`  启动代理服务失败，配置文件：${proxyData.rootDir}/${proxyData.dir}/${proxyData.fileName}.ts`))
+          console.log(chalk.red(`  启动代理服务失败，配置文件：${proxyData.rootDir}/${proxyData.dir}/${proxyData.fileName}.cache.json`))
           console.log('')
         }
+      } else {
+        console.log(chalk.yellow(`  已启动代理服务`))
+        console.log('')
       }
     } catch (error) {
       console.log(chalk.red(`  启动代理服务失败`))

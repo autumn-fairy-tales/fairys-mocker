@@ -34,7 +34,7 @@
     "*.{js,jsx,tsx,ts,less,md,json}": "prettier --write"
   },
   "workspaces": [
-    "example",
+    "examples/*",
     "packages/*",
     "docs"
   ]

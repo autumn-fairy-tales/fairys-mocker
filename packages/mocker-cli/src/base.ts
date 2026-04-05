@@ -73,7 +73,7 @@ export class FairysMockerBase {
   initApp = (app: express.Express | connect.Server, options?: FairysMockerBaseCallBackOptions): express.Express | connect.Server => {
     if (!this.app) {
       console.log('')
-      console.log(chalk.hex('#54FF9F')('===fairys-mocker================='))
+      console.log(chalk.hex('#54FF9F')('=================fairys-mocker================='))
       console.log('')
 
       this.mainApp = app
