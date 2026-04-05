@@ -60,7 +60,6 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
           pathRewrite: proxyItem.pathRewrite,
           ws: proxyItem.ws,
           changeOrigin: true,
-          pathFilter: proxyItem.path,
         }))
       }
     }
