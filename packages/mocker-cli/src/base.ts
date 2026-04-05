@@ -15,6 +15,24 @@ import http from "node:http";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = nodePath.dirname(__filename);
 
+
+export interface FairysMockerBaseCallBackOptions {
+  /**注册路由之前*/
+  beforeRouter?: () => void;
+  /**注册路由之后*/
+  afterRouter?: () => void;
+  /**注册静态文件服务之前*/
+  beforeStaticServer?: () => void;
+  /**注册静态文件服务之后*/
+  afterStaticServer?: () => void;
+  /**注册mock和代理路由接口之前*/
+  beforeRegisterMockProxyRoutes?: () => void;
+  /**注册mock和代理路由接口之后*/
+  afterRegisterMockProxyRoutes?: () => void;
+  /**最后*/
+  last?: () => void;
+}
+
 export class FairysMockerBase {
   /**服务*/
   server: http.Server | undefined = undefined
@@ -52,7 +70,7 @@ export class FairysMockerBase {
   }
 
   /**初始化 app 服务*/
-  initApp = (app: express.Express | connect.Server, cb?: () => void): express.Express | connect.Server => {
+  initApp = (app: express.Express | connect.Server, options?: FairysMockerBaseCallBackOptions): express.Express | connect.Server => {
     if (!this.app) {
       console.log('')
       console.log(chalk.hex('#54FF9F')('===fairys-mocker================='))
@@ -65,15 +83,25 @@ export class FairysMockerBase {
 
       this.app.use(express.json());
       this.app.use(cors());
+
+      options?.beforeRouter?.()
+
       /**注册主路由*/
       this.router = express.Router();
       /**注册内置路由*/
       this.fairysMockerRouter = express.Router();
       this.router.use(this.fairysMockerRouter);
 
+      options?.afterRouter?.()
+
+      options?.beforeStaticServer?.()
+
       // 静态文件服务
       const staticDir = nodePath.join(__dirname, '../public/_fairys_mocker');
       this.staticServer(staticDir, '/_fairys_mocker', false);
+
+      options?.afterStaticServer?.()
+      options?.beforeRegisterMockProxyRoutes?.()
 
       for (let index = 0; index < this.controller.length; index++) {
         const Controller = this.controller[index];
@@ -85,9 +113,12 @@ export class FairysMockerBase {
           start()
         }
       }
+
+      options?.afterRegisterMockProxyRoutes?.()
+
       this.app.use('/', this.router);
 
-      cb?.()
+      options?.last?.()
 
       console.log('')
 

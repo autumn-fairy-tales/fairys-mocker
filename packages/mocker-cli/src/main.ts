@@ -1,14 +1,14 @@
 
 import express from 'express';
 import chalk from 'chalk';
-import { fairysMockerBase } from './base.js';
+import { fairysMockerBase, FairysMockerBaseCallBackOptions } from './base.js';
 import { detect } from 'detect-port';
 
 export class FairysMockerExpress {
   base = fairysMockerBase;
   /**创建 app*/
-  createApp = (cb?: () => void) => {
-    return fairysMockerBase.initApp(express(), cb)
+  createApp = (options?: FairysMockerBaseCallBackOptions) => {
+    return fairysMockerBase.initApp(express(), options)
   }
   // 使用express
   /**检测端口，返回实际端口*/
@@ -43,8 +43,8 @@ export class FairysMockerExpress {
   }
   staticServer = fairysMockerBase.staticServer;
   /**启动 app*/
-  start = (cb?: () => void) => {
-    this.createApp(cb);
+  start = (options?: FairysMockerBaseCallBackOptions) => {
+    this.createApp(options);
     this.listen();
   }
 

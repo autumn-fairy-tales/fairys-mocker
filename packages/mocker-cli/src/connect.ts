@@ -1,14 +1,14 @@
 
 import connect from 'connect';
 import chalk from 'chalk';
-import { fairysMockerBase } from './base.js';
+import { fairysMockerBase, FairysMockerBaseCallBackOptions } from './base.js';
 import { detect } from 'detect-port';
 
 export class FairysMockerConnect {
   base = fairysMockerBase;
   /**创建 app*/
-  createApp = (cb?: () => void) => {
-    return fairysMockerBase.initApp(connect(), cb)
+  createApp = (options?: FairysMockerBaseCallBackOptions) => {
+    return fairysMockerBase.initApp(connect(), options)
   }
 
   // 使用 connect
@@ -46,8 +46,8 @@ export class FairysMockerConnect {
   staticServer = fairysMockerBase.staticServer;
 
   /**启动 app*/
-  start = (cb?: () => void) => {
-    this.createApp(cb);
+  start = (options?: FairysMockerBaseCallBackOptions) => {
+    this.createApp(options);
     this.listen();
   }
 

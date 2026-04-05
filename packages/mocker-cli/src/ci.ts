@@ -41,11 +41,13 @@ export const CI = (app: FairysMockerExpress | FairysMockerConnect) => {
     // 1. 直接当 mock 服务，
     // 2. 生成 mock 数据
     // 3. mock 服务 + 数据
-    app.start(() => {
-      if (!argv.static) {
-        return;
+    app.start({
+      afterStaticServer: () => {
+        if (!argv.static) {
+          return;
+        }
+        app.staticServer(argv.static, argv['static-prefix']);
       }
-      app.staticServer(argv.static, argv['static-prefix']);
     });
   }
 }

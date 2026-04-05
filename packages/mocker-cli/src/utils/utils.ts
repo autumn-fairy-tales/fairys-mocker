@@ -3,6 +3,16 @@ import chalk from 'chalk';
 import fs from 'node:fs';
 import path from "node:path"
 
+export interface UtilsGlobalVariableOptions {
+  root?: string;
+  dir?: string;
+  file?: string;
+  proxyFile?: string;
+  isCreateMockDataFile?: boolean;
+  isCreateProxyDataFile?: boolean;
+  isEnableWebsocket?: boolean;
+}
+
 class UtilsGlobalVariable {
   /**根目录*/
   public rootDir = process.cwd();
@@ -24,12 +34,12 @@ class UtilsGlobalVariable {
     if (value && fs.existsSync(value)) {
       this.rootDir = value
     } else {
+      this.rootDir = process.env.FAIRYS_MOCKER_ROOT_DIR || path.join(process.cwd());
       if (value) {
         console.log('')
-        console.log(chalk.red(`设置的根目录不存在：${value}`))
+        console.log(chalk.red(`设置的根目录不存在：${value}, 默认使用：${this.rootDir}`))
         console.log('')
       }
-      this.rootDir = process.env.FAIRYS_MOCKER_ROOT_DIR || path.join(process.cwd());
     }
   }
 
@@ -61,6 +71,19 @@ class UtilsGlobalVariable {
       this.isCreateProxyDataFile = fig
     }
   }
+
+  /**设置参数*/
+  setOptions = (options: UtilsGlobalVariableOptions = {}) => {
+    this.setDir(options.dir);
+    this.setFile(options.file);
+    this.setProxyFile(options.proxyFile);
+    this.setIsCreateMockDataFile(options.isCreateMockDataFile);
+    this.setIsCreateProxyDataFile(options.isCreateProxyDataFile);
+    if (typeof options.isEnableWebsocket === "boolean") {
+      this.isEnableWebsocket = options.isEnableWebsocket;
+    }
+  }
+
 }
 
 export const utilsGlobalVariable = new UtilsGlobalVariable()
