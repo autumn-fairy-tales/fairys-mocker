@@ -37,12 +37,23 @@ export function Post(path: string) {
   };
 }
 
-// POST 方法装饰器（新版标准，100% 触发）
+// GET 方法装饰器（新版标准，100% 触发）
 export function Get(path: string) {
   return (target: any, context: ClassMethodDecoratorContext) => {
     if (context.kind === 'method') {
       routesMap.set(target, { method: 'get', path, funName: context.name })
     }
+    // ✅ 正确包装函数（必须用 context.addInitializer）
+    // const methodName = context.name;
+    // context.addInitializer(function (this: any) {
+    //   const originalMethod = this[methodName];
+    //   // 替换成包装方法
+    //   this[methodName] = (...args: any[]) => {
+    //     console.log('✅ 接口访问执行了:', path); // 这里一定会打印
+    //     return originalMethod.apply(this, args);
+    //   };
+    // });
+
   };
 }
 
@@ -75,11 +86,13 @@ export function registerRoutes(instance: unknown) {
   for (let index = 0; index < controllerMethods.length; index++) {
     /**获取方法名*/
     const controllerMethod = controllerMethods[index];
-    /**方法*/
-    const _requestHandle: (req: express.Request, res: express.Response, next: express.NextFunction) => void = proto[controllerMethod];
+    /**方法 - 从实例上获取，而不是从原型上获取，这样可以获取到被装饰器包装后的方法*/
+    const _requestHandle: (req: express.Request, res: express.Response, next: express.NextFunction) => void = (instance as any)[controllerMethod];
+    // const _requestHandle: (req: express.Request, res: express.Response, next: express.NextFunction) => void = proto[controllerMethod];
+    /**解决this指向问题*/
     const boundRequestHandle: (req: express.Request, res: express.Response, next: express.NextFunction) => void = _requestHandle.bind(instance);
-    /**获取当前方法配置*/
-    const routeItem = routesMap.get(_requestHandle);
+    /**获取当前方法配置 - 仍然需要从原型上获取，因为装饰器是在原型上设置的*/
+    const routeItem = routesMap.get(proto[controllerMethod]);
     if (routeItem) {
       /**拼接前缀*/
       const fullPath = (controllerAPIRootPath?.prefix || '') + routeItem.path;
