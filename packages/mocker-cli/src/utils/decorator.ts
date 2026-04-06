@@ -53,7 +53,6 @@ export function Get(path: string) {
     //     return originalMethod.apply(this, args);
     //   };
     // });
-
   };
 }
 
@@ -68,9 +67,39 @@ export function MethodPath(path: string, method: RouteItemType['method'] = 'post
     }
   };
 }
+export function Delete(path: string) {
+  return MethodPath(path, 'delete');
+}
+
+export function Put(path: string) {
+  return MethodPath(path, 'put');
+}
+
+export function Patch(path: string) {
+  return MethodPath(path, 'patch');
+}
+
+export function Head(path: string) {
+  return MethodPath(path, 'head');
+}
+
+export function Options(path: string) {
+  return MethodPath(path, 'options');
+}
+
+/**属性默认值*/
+export function ClassAttributeDefault(defaultVal: any) {
+  return function (target: undefined, context: ClassFieldDecoratorContext) {
+    // 返回的函数会接收原始默认值，返回新值
+    return (initialValue: any) => {
+      return initialValue ?? defaultVal;
+    };
+  };
+}
+
 
 // 注册路由（constructor 调用）
-export function registerRoutes(instance: unknown) {
+export function registerControllerRoute(instance: unknown) {
   const fairysRouter = fairysMockerBase.fairysMockerRouter;
   if (!fairysRouter) {
     console.log('请先初始化内置路由');

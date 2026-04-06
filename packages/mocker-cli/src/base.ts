@@ -6,7 +6,7 @@ import cors from "cors"
 import nodePath from "node:path";
 import { fileURLToPath } from "node:url";
 import { MockRouterController } from "./controller/mock.router.js"
-import { ClassStruct, registerRoutes } from "./utils/decorator.js"
+import { ClassStruct, registerControllerRoute } from "./utils/decorator.js"
 import { ProxyRouterController } from "./controller/proxy.router.js"
 import chalk from "chalk"
 import http from "node:http";
@@ -91,6 +91,26 @@ export class FairysMockerBase {
     }
   }
 
+  /**注册mock和代理路由接口*/
+  private registerControllerRoute = () => {
+    if (this.controller.length === 0) {
+      return;
+    }
+    for (let index = 0; index < this.controller.length; index++) {
+      const Controller = this.controller[index];
+      const newController = new Controller();
+      registerControllerRoute(newController)
+      if (newController instanceof ProxyRouterController) {
+        this.proxyController = newController
+      }
+      // @ts-ignore
+      const start = newController?.start;
+      if (typeof start === 'function') {
+        start()
+      }
+    }
+  }
+
   /**初始化 app 服务*/
   initApp = (app: express.Express | connect.Server, options?: FairysMockerBaseCallBackOptions): express.Express | connect.Server => {
     if (!this.app) {
@@ -124,19 +144,7 @@ export class FairysMockerBase {
       options?.afterStaticServer?.(this.app, this.mainApp, this)
       options?.beforeRegisterMockProxyRoutes?.(this.app, this.mainApp, this)
 
-      for (let index = 0; index < this.controller.length; index++) {
-        const Controller = this.controller[index];
-        const newController = new Controller();
-        registerRoutes(newController)
-        if (newController instanceof ProxyRouterController) {
-          this.proxyController = newController
-        }
-        // @ts-ignore
-        const start = newController?.start;
-        if (typeof start === 'function') {
-          start()
-        }
-      }
+      this.registerControllerRoute()
 
       options?.afterRegisterMockProxyRoutes?.(this.app, this.mainApp, this)
 

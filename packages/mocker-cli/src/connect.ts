@@ -30,7 +30,7 @@ export class FairysMockerConnect {
   /**启动服务器*/
   listen = async (port?: number, callback?: (error?: Error) => void, isLog: boolean = true) => {
     if (!fairysMockerBase.mainApp) {
-      console.log(chalk.red('请先初始化 app'));
+      console.log(chalk.red('请先初始化 主应用'));
       return;
     }
     const app = fairysMockerBase.mainApp

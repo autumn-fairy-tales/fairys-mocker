@@ -13,6 +13,7 @@ export class MockRouterController extends BaseController {
   name = 'MockRouterController'
   /**mock 路由器实例*/
   router: MockRouter | null = null;
+
   constructor() {
     super();
     this.router = new MockRouter();
