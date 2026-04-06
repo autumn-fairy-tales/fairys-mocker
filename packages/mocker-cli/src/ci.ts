@@ -13,13 +13,15 @@ function help() {
   console.log('   --file2                  ', '设置文件名2(默认取环境变量中的`FAIRYS_MOCKER_PROXY_FILE`).');
   console.log('   --static                 ', '设置静态文件服务目录.');
   console.log('   --static-prefix          ', '设置静态文件服务目录访问前缀.');
-  console.log('   --is-mock-file           ', '是否生成mock数据文件,默认生成.');
-  console.log('   --is-proxy-file          ', '是否生成proxy数据文件,默认生成.');
-  console.log('   --is-connect             ', '是否是connect服务.默认express.');
+  console.log('   --is-mock-file           ', '是否生成mock数据文件,默认:true.');
+  console.log('   --is-proxy-file          ', '是否生成proxy数据文件,默认:true.');
+  console.log('   --is-connect             ', '是否是connect服务.默认:false，默认使用`express`服务.');
 
   console.log('\n  Example:\n');
   console.log('   $ \x1b[35mfairys-mocker\x1b[0m --dir mock2');
   console.log('   $ \x1b[35mfairys-mocker\x1b[0m --file index.mock');
+  console.log('   $ \x1b[35mfairys-mocker\x1b[0m --file2 proxy');
+  console.log('   $ \x1b[35mfairys-mocker\x1b[0m --is-connect true');
 }
 
 const argv: Partial<Arguments> = parser(process.argv.slice(2), {
