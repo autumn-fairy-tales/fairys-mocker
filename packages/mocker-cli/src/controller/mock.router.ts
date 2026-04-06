@@ -10,6 +10,7 @@ import chalk from 'chalk';
 /**路由*/
 @Controller('/_fairys')
 export class MockRouterController extends BaseController {
+  name = 'MockRouterController'
   /**mock 路由器实例*/
   router: MockRouter | null = null;
   constructor() {

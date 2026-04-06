@@ -35,7 +35,7 @@ export interface FairysMockerBaseCallBackOptions {
 
 export class FairysMockerBase {
   /**服务*/
-  server: http.Server | undefined = undefined
+  private _server: http.Server | undefined = undefined
   /**主路由*/
   router: express.Router | undefined = undefined;
   /**内置路由*/
@@ -48,6 +48,22 @@ export class FairysMockerBase {
   controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
   /**静态文件服务列表*/
   staticServerList: string[] = [];
+  /**代理路由控制器*/
+  private proxyController: ProxyRouterController | undefined = undefined
+
+  set server(server: http.Server) {
+    const _oldServer = this._server
+    this._server = server
+    /**判断是否是同一个服务*/
+    if (this.proxyController && server !== _oldServer) {
+      this.proxyController.router?.upgrade?.()
+    }
+  }
+
+  get server(): http.Server | undefined {
+    return this._server
+  }
+
 
   /**静态文件服务*/
   staticServer = (dir: string, prefix: string = '/', isRegister: boolean = true) => {
@@ -112,6 +128,9 @@ export class FairysMockerBase {
         const Controller = this.controller[index];
         const newController = new Controller();
         registerRoutes(newController)
+        if (newController instanceof ProxyRouterController) {
+          this.proxyController = newController
+        }
         // @ts-ignore
         const start = newController?.start;
         if (typeof start === 'function') {

@@ -10,6 +10,7 @@ import chalk from 'chalk';
 /**路由*/
 @Controller('/_fairys')
 export class ProxyRouterController extends BaseController {
+  name = 'ProxyRouterController'
   /**代理 路由器实例*/
   router: ProxyRouter | null = null;
 

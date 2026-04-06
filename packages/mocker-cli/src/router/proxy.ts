@@ -67,13 +67,24 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
     this.useRouter();
   }
 
-  /**销毁路由器实例*/
-  destroy: (msg?: string) => void = (msg) => {
-    if (this.router) {
-      // 清空路由器实例
-      this.router.stack = [];
-      this.isEnabled = false;
+  /** 升级 WebSocket 的 upgrade 处理*/
+  upgrade = () => {
+    if (!this.isEnabled) {
+      return
     }
+    // 在更新 server 的处理中，需要升级 WebSocket
+    /** http 升级 WebSocket 的 upgrade 销毁*/
+    const wsProxyList = this.wsProxyList
+    if (Array.isArray(wsProxyList) && wsProxyList.length && fairysMockerBase.server) {
+      for (let index = 0; index < wsProxyList.length; index++) {
+        const wsProxy = wsProxyList[index];
+        fairysMockerBase.server.on('upgrade', wsProxy.upgrade)
+      }
+    }
+  }
+
+  /** 销毁 WebSocket 的 upgrade 销毁*/
+  offUpgrade = (isClear: boolean = true) => {
     /** http 升级 WebSocket 的 upgrade 销毁*/
     const wsProxyList = this.wsProxyList
     if (Array.isArray(wsProxyList) && wsProxyList.length && fairysMockerBase.server) {
@@ -82,6 +93,19 @@ export class ProxyRouter extends BaseRouter<ProxyItem> {
         fairysMockerBase.server.off('upgrade', wsProxy.upgrade)
       }
     }
+    if (isClear) {
+      this.wsProxyList = []
+    }
+  }
+
+  /**销毁路由器实例*/
+  destroy: (msg?: string) => void = (msg) => {
+    if (this.router) {
+      // 清空路由器实例
+      this.router.stack = [];
+      this.isEnabled = false;
+    }
+    this.offUpgrade()
     if (msg) {
       console.log(chalk.red(msg))
     }
