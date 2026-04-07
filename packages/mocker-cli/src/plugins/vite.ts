@@ -19,10 +19,5 @@ export const fairysMockerVitePlugin = (options: FairysMockerVitePluginOptions = 
     });
     // @ts-ignore
     fairysMockerBase.server = server.httpServer
-
-    // 被调用的后置钩子
-    return () => {
-
-    }
   },
 } as PluginOption)

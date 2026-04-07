@@ -99,8 +99,8 @@ export function ClassAttributeDefault(defaultVal: any) {
 
 
 // 注册路由（constructor 调用）
-export function registerControllerRoute(instance: unknown) {
-  const fairysRouter = fairysMockerBase.fairysMockerRouter;
+export function registerControllerRoute(instance: unknown, router?: express.Router) {
+  const fairysRouter = router || fairysMockerBase.fairysMockerRouter;
   if (!fairysRouter) {
     console.log('请先初始化内置路由');
     return;

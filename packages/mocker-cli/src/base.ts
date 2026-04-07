@@ -45,9 +45,10 @@ export class FairysMockerBase {
   /**主应用*/
   mainApp: express.Express | connect.Server | undefined = undefined;
   /**类*/
-  controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
+  private controller: ClassStruct[] = [MockRouterController, ProxyRouterController];
+
   /**静态文件服务列表*/
-  staticServerList: string[] = [];
+  private staticServerList: string[] = [];
   /**代理路由控制器*/
   private proxyController: ProxyRouterController | undefined = undefined
 
@@ -63,7 +64,6 @@ export class FairysMockerBase {
   get server(): http.Server | undefined {
     return this._server
   }
-
 
   /**静态文件服务*/
   staticServer = (dir: string, prefix: string = '/', isRegister: boolean = true) => {
@@ -92,15 +92,16 @@ export class FairysMockerBase {
   }
 
   /**注册mock和代理路由接口*/
-  private registerControllerRoute = () => {
-    if (this.controller.length === 0) {
+  private registerControllerRoute = (controller: ClassStruct[], router?: express.Router) => {
+    const _controller = controller
+    if (_controller.length === 0) {
       return;
     }
-    for (let index = 0; index < this.controller.length; index++) {
-      const Controller = this.controller[index];
+    for (let index = 0; index < _controller.length; index++) {
+      const Controller = _controller[index];
       const newController = new Controller();
-      registerControllerRoute(newController)
-      if (newController instanceof ProxyRouterController) {
+      registerControllerRoute(newController, router)
+      if (newController instanceof ProxyRouterController && router === this.fairysMockerRouter) {
         this.proxyController = newController
       }
       // @ts-ignore
@@ -142,9 +143,10 @@ export class FairysMockerBase {
       this.staticServer(staticDir, '/_fairys_mocker', false);
 
       options?.afterStaticServer?.(this.app, this.mainApp, this)
+
       options?.beforeRegisterMockProxyRoutes?.(this.app, this.mainApp, this)
 
-      this.registerControllerRoute()
+      this.registerControllerRoute(this.controller, this.fairysMockerRouter)
 
       options?.afterRegisterMockProxyRoutes?.(this.app, this.mainApp, this)
 
