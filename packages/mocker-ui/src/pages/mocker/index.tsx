@@ -21,8 +21,10 @@ export default function MockerConfig() {
     isModalOpen: boolean,
     currentIndex: number | null,
     modalBody: string,
-    isEnabledStart: boolean
+    isEnabledStart: boolean,
+    ids: (string | number | undefined)[]
   }>({
+    ids: [],
     rootDir: "",
     dir: "mock",
     fileName: "index.mock",
@@ -105,7 +107,9 @@ export default function MockerConfig() {
       }
       const data = await res.json();
       if (data.code === 200) {
+        const allids = ((data.data || []) as MockerItem[]).map(item => item.id).filter(Boolean)
         dispatch({
+          ids: allids,
           mockList: data.data,
           dir: data.dir,
           fileName: data.fileName,
@@ -223,12 +227,15 @@ export default function MockerConfig() {
     }
     try {
       if (isServer) {
+        /**删除的id*/
+        const deleteIds = state.ids.filter(id => !mockList.some(item => item.id === id))
         const res = await fetch(`${API_BASE_URL}/_fairys/_mock`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            deleteIds,
             mockList,
             dir,
             fileName,
@@ -431,15 +438,10 @@ export default function MockerConfig() {
                   return <input
                     type="text"
                     // @ts-ignore
-                    value={Array.isArray(item.delay) ? `${item.delay[0]},${item.delay[1]}` : item.delay || ''}
+                    value={item.delay || ''}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value.includes(',')) {
-                        const [min, max] = value.split(',').map(Number);
-                        updateMockerItem(index, 'delay', [min, max]);
-                      } else {
-                        updateMockerItem(index, 'delay', parseInt(value) || 0);
-                      }
+                      updateMockerItem(index, 'delay', parseInt(value) || 0);
                     }}
                     className="w-full px-2 py-1 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-white text-xs"
                     placeholder="例如: 1000 或 500,2000"

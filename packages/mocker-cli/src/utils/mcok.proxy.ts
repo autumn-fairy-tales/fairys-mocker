@@ -125,7 +125,7 @@ export interface MockerItem {
   /**状态码*/
   status: string;
   //配置响应延迟时间, 如果传入的是一个数组，则代表延迟时间的范围
-  delay: number | [number, number];
+  delay: number ;
   /**响应体(可以自定义返回格式)*/
   body: any;
   /**接口地址*/

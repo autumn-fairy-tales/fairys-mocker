@@ -21,8 +21,10 @@ export default function ProxyConfig() {
     isModalOpen: boolean,
     currentIndex: number | null,
     modalBody: string
-    isEnabledStart: boolean
+    isEnabledStart: boolean,
+    ids: (string | number | undefined)[]
   }>({
+    ids: [],
     rootDir: "",
     dir: "mock",
     fileName: "proxy",
@@ -102,11 +104,13 @@ export default function ProxyConfig() {
       const res = await fetch(`${API_BASE_URL}/_fairys/_proxy?${params}`);
       const data = await res.json();
       if (data.code === 200) {
+        const allids = ((data.data || []) as ProxyItem[]).map(item => item.id).filter(Boolean)
         let proxyList = data.data
         if (!Array.isArray(data.data)) {
           proxyList = []
         }
         dispatch({
+          ids: allids,
           proxyList: proxyList,
           dir: data.dir,
           fileName: data.fileName,
@@ -197,12 +201,15 @@ export default function ProxyConfig() {
     }
     try {
       if (isServer) {
+        const deleteIds = state.ids.filter(id => !proxyList.some(item => item.id === id))
+
         const res = await fetch(`${API_BASE_URL}/_fairys/_proxy`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            deleteIds,
             proxyList,
             dir,
             fileName,

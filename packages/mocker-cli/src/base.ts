@@ -10,6 +10,7 @@ import { ClassStruct, registerControllerRoute } from "./utils/decorator.js"
 import { ProxyRouterController } from "./controller/proxy.router.js"
 import chalk from "chalk"
 import http from "node:http";
+import { dbInstance } from "./db/db.js"
 
 // 转换成 __filename 和 __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -118,6 +119,8 @@ export class FairysMockerBase {
       console.log('')
       console.log(chalk.hex('#54FF9F')('=================fairys-mocker================='))
       console.log('')
+
+      dbInstance.init();
 
       this.mainApp = app
       this.app = express();

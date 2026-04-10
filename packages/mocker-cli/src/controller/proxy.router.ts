@@ -6,6 +6,7 @@ import { ProxyRouter } from '../router/proxy.js';
 import { BaseController } from './base.js';
 import { getProxyFile, createProxyFile } from '../utils/mcok.proxy.js';
 import chalk from 'chalk';
+import { dbInstance } from '../db/db.js';
 
 /**路由*/
 @Controller('/_fairys')
@@ -20,23 +21,27 @@ export class ProxyRouterController extends BaseController {
   }
 
   @Post('/_proxy')
-  post_proxy(req: express.Request, res: express.Response) {
+  async post_proxy(req: express.Request, res: express.Response) {
     try {
-      const { proxyList, dir, fileName = 'proxy', rootDir } = req.body;
+      const { proxyList, dir, fileName = 'proxy', rootDir, deleteIds } = req.body;
       let _rootDir = rootDir || utilsGlobalVariable.rootDir;
       if (rootDir && !fs.existsSync(rootDir)) {
         _rootDir = utilsGlobalVariable.rootDir;
       }
-      const proxyData = createProxyFile(proxyList, _rootDir, dir, fileName)
+      /**先入库*/
+      await dbInstance.handleProxySaveData(deleteIds, proxyList)
+      const list = await dbInstance.queryProxyData(_rootDir);
+
+      const proxyData = createProxyFile(list, _rootDir, dir, fileName)
       if (proxyData?.proxyConfig) {
         if (this.router?.isEnabled) {
-          this.router?.load(proxyList);
+          this.router?.load(list);
         }
         res.json({
           code: 200,
           message: '代理配置保存成功',
           data: proxyData.proxyConfig,
-          proxyList: proxyList,
+          proxyList: list,
           rootDir: proxyData.rootDir,
           dir: proxyData.dir,
           cache: proxyData.cache,

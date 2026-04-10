@@ -6,6 +6,9 @@ import { MockRouter } from "../router/mock.js"
 import { BaseController } from "./base.js"
 import { getMcokFile, createMockFile } from '../utils/mcok.proxy.js';
 import chalk from 'chalk';
+import { dbInstance } from '../db/db.js'
+
+
 
 /**路由*/
 @Controller('/_fairys')
@@ -21,24 +24,28 @@ export class MockRouterController extends BaseController {
 
   /**保存 Mock 配置*/
   @Post('/_mock')
-  post_mock(req: express.Request, res: express.Response) {
+  async post_mock(req: express.Request, res: express.Response) {
     // 定义接口
     try {
-      const { mockList, dir, fileName = 'index.mock', rootDir } = req.body;
+      const { mockList, dir, fileName = 'index.mock', rootDir, deleteIds } = req.body;
       let _rootDir = rootDir || utilsGlobalVariable.rootDir;
       if (rootDir && !fs.existsSync(rootDir)) {
         _rootDir = utilsGlobalVariable.rootDir;
       }
-      const mockData = createMockFile(mockList, _rootDir, dir, fileName)
+      /**先入库*/
+      await dbInstance.handleMockSaveData(deleteIds, mockList)
+      const list = await dbInstance.queryMockData(_rootDir);
+
+      const mockData = createMockFile(list, _rootDir, dir, fileName)
       if (mockData?.mockConfig) {
         if (this.router?.isEnabled) {
-          this.router?.load(mockData.mockConfig);
+          this.router?.load(list);
         }
         res.json({
           code: 200,
           message: 'Mock 配置保存成功',
           data: mockData.mockConfig,
-          mockList: mockList,
+          mockList: list,
           rootDir: mockData.rootDir,
           dir: mockData.dir,
           cache: mockData.cache,

@@ -1,12 +1,14 @@
 import Mock from "mockjs"
 
 export interface MockerItem {
+  /**SQLite库中生成的 id*/
+  id?: number,
   /**该接口允许的 请求方法，默认同时支持 GET 和 POST*/
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
   /**状态码*/
   status: string;
   //配置响应延迟时间, 如果传入的是一个数组，则代表延迟时间的范围
-  delay: number | [number, number];
+  delay: number
   /**响应体(可以自定义返回格式)*/
   body: any;
   /**接口地址*/
@@ -45,17 +47,10 @@ export function createMockItemData(item: MockerItem) {
   listBody.data = saveData;
   mockBody = listBody;
   // 处理延迟
-  let delay = 0;
-  if (Array.isArray(item.delay)) {
-    const [min, max] = item.delay;
-    delay = Math.floor(Math.random() * (max - min + 1)) + min;
-  } else {
-    delay = item.delay;
-  }
   return {
     ...item,
     body: mockBody,
-    delay,
+    delay: item.delay || 0,
   };
 }
 
@@ -73,6 +68,8 @@ export default createMockData;
  * 代理配置参数
  */
 export type ProxyItem = {
+  /**SQLite库中生成的 id*/
+  id?: number,
   /**代理路径*/
   path: string,
   /**转发地址*/
