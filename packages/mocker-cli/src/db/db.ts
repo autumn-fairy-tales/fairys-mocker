@@ -16,10 +16,10 @@ export class DBInstanceBase {
 
   /**初始化*/
   init = () => {
-    const dbPath = nodePath.join(__dirname, './fairys-mocker.db');
+    // const dbPath = nodePath.join(__dirname, './fairys-mocker.db');
+    const dbPath = nodePath.join(process.cwd(), './fairys-mocker.db');
     this.db = new verbose.Database(dbPath);
     this.createTable();
-
   }
 
   private createMockTable = () => {
