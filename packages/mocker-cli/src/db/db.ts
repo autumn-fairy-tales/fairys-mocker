@@ -122,27 +122,39 @@ export class DBInstanceBase {
   }
 
   /**更新 mock 数据*/
-  updateMockData = (item: MockerItem) => {
-    return this.run(`UPDATE mock SET method=?, status=?, delay=?, body=?, url=?, listCount=? WHERE id=?`, [
-      item.method,
-      item.status,
-      item.delay,
-      item.body ? JSON.stringify(item.body) : '',
-      item.url,
-      item.listCount,
-      item.id,
-    ]);
+  updateMockData = async (item: MockerItem) => {
+    // 判断是否存在库中
+    const exist = await this.all<MockerItem>(`SELECT * FROM mock where id=?`, [item.id]);
+    if (exist.length) {
+      return this.run(`UPDATE mock SET method=?, status=?, delay=?, body=?, url=?, listCount=? WHERE id=?`, [
+        item.method,
+        item.status,
+        item.delay,
+        item.body ? JSON.stringify(item.body) : '',
+        item.url,
+        item.listCount,
+        item.id,
+      ]);
+    } else {
+      return this.insertMockData(item);
+    }
   }
 
   /**更新 proxy 数据*/
-  updateProxyData = (item: ProxyItem) => {
-    return this.run(`UPDATE proxy SET path=?, target=?, pathRewrite=?, ws=? WHERE id=?`, [
-      item.path,
-      item.target,
-      item.pathRewrite ? JSON.stringify(item.pathRewrite) : '',
-      item.ws,
-      item.id,
-    ]);
+  updateProxyData = async (item: ProxyItem) => {
+    // 判断是否存在库中
+    const exist = await this.all<ProxyItem>(`SELECT * FROM proxy where id=?`, [item.id]);
+    if (exist.length) {
+      return this.run(`UPDATE proxy SET path=?, target=?, pathRewrite=?, ws=? WHERE id=?`, [
+        item.path,
+        item.target,
+        item.pathRewrite ? JSON.stringify(item.pathRewrite) : '',
+        item.ws,
+        item.id,
+      ]);
+    } else {
+      return this.insertProxyData(item);
+    }
   }
 
   /**删除 mock 数据*/

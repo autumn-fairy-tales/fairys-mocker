@@ -9,3 +9,4 @@ mock
 packages/mocker-ui/demo
 packages/mocker-cli/public/ui/*
 _fairys_mocker
+fairys-mocker.db
